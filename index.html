@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои рецепты — Cookidoo Style</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        cookidoo: {
+                            green: '#008542',
+                            darkGreen: '#006c35',
+                            lightBg: '#f8f9fa',
+                            card: '#ffffff'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#f4f5f7] min-h-screen text-gray-800">
+
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="app.showHome()">
+                    <div class="w-10 h-10 rounded-full bg-cookidoo-green flex items-center justify-center text-white font-bold text-xl">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-gray-900">Мои Рецепты</span>
+                </div>
+                <nav class="hidden md:flex space-x-6 text-sm font-medium">
+                    <button onclick="app.showHome()" class="text-gray-900 hover:text-cookidoo-green transition pb-1 border-b-2 border-cookidoo-green">Для Вас</button>
+                    <button onclick="app.showHome()" class="text-gray-500 hover:text-cookidoo-green transition">Мои творения</button>
+                    <button onclick="app.openAddModal()" class="text-cookidoo-green hover:text-cookidoo-darkGreen transition font-semibold"><i class="fa-solid fa-plus mr-1"></i> Добавить рецепт</button>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="app.openAddModal()" class="bg-cookidoo-green hover:bg-cookidoo-darkGreen text-white px-4 py-2 rounded-full text-sm font-medium transition shadow-sm flex items-center">
+                    <i class="fa-solid fa-plus mr-2"></i> Новый рецепт
+                </button>
+                <div class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold cursor-pointer">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Search and Filter Bar -->
+        <div class="mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="relative w-full sm:w-96">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <i class="fa-solid fa-search"></i>
+                </span>
+                <input type="text" id="searchInput" oninput="app.handleSearch(this.value)" placeholder="Поиск по рецептам..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-cookidoo-green focus:border-transparent shadow-sm">
+            </div>
+            <div class="flex items-center space-x-2 text-sm text-gray-600 w-full sm:w-auto justify-end">
+                <span id="recipeCount" class="font-medium">0 рецептов</span>
+            </div>
+        </div>
+
+        <!-- VIEW: Home / Recipe Grid -->
+        <div id="homeView">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">Ваши любимые блюда</h1>
+                <p class="text-sm text-gray-500">Готовьте с удовольствием, редактируйте в один клик</p>
+            </div>
+            <div id="recipeGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Recipe Cards will be injected here -->
+            </div>
+        </div>
+
+        <!-- VIEW: Recipe Detail -->
+        <div id="detailView" class="hidden">
+            <!-- Back button -->
+            <button onclick="app.showHome()" class="mb-6 inline-flex items-center text-sm font-medium text-gray-600 hover:text-cookidoo-green transition">
+                <i class="fa-solid fa-arrow-left mr-2">3</i> Назад к списку
+            </button>
+            <div id="recipeDetailContent" class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <!-- Content injected dynamically -->
+            </div>
+        </div>
+
+    </main>
+
+    <div id="recipeModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                <h3 id="modalTitle" class="text-lg font-bold text-gray-900">Новый рецепт</h3>
+                <button onclick="app.closeModal()" class="text-gray-400 hover:text-gray-600 w-8 h-8 rounded-full flex items-center justify-center bg-gray-100">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="recipeForm" onsubmit="app.saveRecipe(event)" class="p-6 space-y-6">
+                <input type="hidden" id="recipeId">
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Название блюда</label>
+                    <input type="text" id="recipeTitle" required placeholder="Например: Шоколадный фондан" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cookidoo-green focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Время приготовления</label>
+                        <input type="text" id="recipeTime" placeholder="Например: 40 мин" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cookidoo-green focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Порции</label>
+                        <input type="text" id="recipePortions" placeholder="Например: 6 порций" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cookidoo-green focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ссылка на фото (URL)</label>
+                    <input type="url" id="recipeImage" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cookidoo-green focus:outline-none">
+                    <p class="text-xs text-gray-500 mt-1">Оставьте пустым для установки стандартного изображения.</p>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-sm font-semibold text-gray-700">Ингредиенты (по одному на строку)</label>
+                    </div>
+                    <textarea id="recipeIngredients" rows="4" placeholder="125 г муки&#10;200 г шоколада&#10;4 яйца" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cookidoo-green focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-sm font-semibold text-gray-700">Этапы приготовления (каждый шаг с новой строки)</label>
+                    </div>
+                    <textarea id="recipeSteps" rows="5" placeholder="Разогреть духовку до 180°C.&#10;Растопить шоколад на водяной бане.&#10;Взбить яйца с сахаром." class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cookidoo-green focus:outline-none"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="app.closeModal()" class="px-5 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Отмена</button>
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-cookidoo-green hover:bg-cookidoo-darkGreen text-white text-sm font-medium transition shadow-sm">Сохранить рецепт</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        class RecipeApp {
+            constructor() {
+                this.recipes = this.loadRecipes();
+                this.currentFilter = '';
+                this.activeRecipeId = null;
+                this.init();
+            }
+
+            init() {
+                this.render();
+            }
+
+            loadRecipes() {
+                const saved = localStorage.getItem('cookidoo_recipes_v1');
+                if (saved) {
+                    try { return JSON.parse(saved); } catch(e) { console.error(e); }
+                }
+                // Default initial recipe like Cookidoo example
+                return [
+                    {
+                        id: 'rec_1',
+                        title: 'Véritable moelleux au chocolat : la meilleure recette',
+                        time: '40 мин',
+                        portions: '6 порций',
+                        image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80',
+                        ingredients: [
+                            '125 г муки',
+                            '125 г сливочного масла, при комнатной температуре',
+                            '250 г сахарного песка',
+                            '200 г темного шоколада, нарезанного',
+                            '4 яйца, отделить белки от желтков',
+                            '0.5 пакетика разрыхлителя'
+                        ],
+                        steps: [
+                            'Разогреть духовку до 180°C (термостат 6).',
+                            'Положить шоколад в чашу и растопить (примерно 5 сек).',
+                            'Добавить сливочное масло и перемешивать до полного таяния (30 сек).',
+                            'Добавить муку и разрыхлитель, затем перемешать (20 сек).',
+                            'Вставить венчик. Добавить яичные желтки и сахар, взбивать до получения воздушной массы.',
+                            'Добавить шоколадную смесь и тщательно перемешать.',
+                            'Аккуратно ввести взбитые до устойчивых пиков белки снизу вверх.'
+                        ]
+                    },
+                    {
+                        id: 'rec_2',
+                        title: 'Итальянская паста Карбонара с беконом и пармезаном',
+                        time: '25 мин',
+                        portions: '4 порции',
+                        image: 'https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=800&q=80',
+                        ingredients: [
+                            '400 г спагетти',
+                            '200 г гуанчиале или панчетты',
+                            '4 крупных желтка',
+                            '100 г свежего сыра пармезан (тертый)',
+                            'Свежемолотый черный перец',
+                            'Соль по вкусу'
+                        ],
+                        steps: [
+                            'Поставить кашицу с подсоленной водой на огонь и отварить спагетти аль-денте.',
+                            'Нарезать гуанчиале тонкими полосками и обжарить на сковороде до хрустящей корочки.',
+                            'В миске взбить яичные желтки с тертым пармезаном и обильным количеством черного перца.',
+                            'Соединить горячие спагетти с беконом (выключив огонь), добавить яичную смесь и немного воды от масты, быстро перемешать до кремового соуса.'
+                        ]
+                    }
+                ];
+            }
+
+            saveToStorage() {
+                localStorage.setItem('cookidoo_recipes_v1', JSON.stringify(this.recipes));
+            }
+
+            render() {
+                const grid = document.getElementById('recipeGrid');
+                const countEl = document.getElementById('recipeCount');
+                
+                const filtered = this.recipes.filter(r => 
+                    r.title.toLowerCase().includes(this.currentFilter.toLowerCase()) ||
+                    r.ingredients.some(i => i.toLowerCase().includes(this.currentFilter.toLowerCase()))
+                );
+
+                countEl.textContent = `${filtered.length} ${this.getRecipeWord(filtered.length)}`;
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = `
+                        <div class="col-span-full py-16 text-center bg-white rounded-2xl border border-gray-200">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto text-gray-400 text-2xl mb-4">
+                                <i class="fa-solid fa-bowl-food"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800">Рецепты не найдены</h3>
+                            <p class="text-sm text-gray-500 mt-1">Попробуйте изменить поисковый запрос или добавить новый рецепт.</p>
+                            <button onclick="app.openAddModal()" class="mt-4 bg-cookidoo-green text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-cookidoo-darkGreen transition">Добавить рецепт</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                grid.innerHTML = filtered.map(recipe => `
+                    <div class="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col cursor-pointer group" onclick="app.openDetail('${recipe.id}')">
+                        <div class="relative h-48 overflow-hidden bg-gray-100">
+                            <img src="${recipe.image || 'https://placehold.co/600x400/e2e8f0/475569?text=Рецепт'}" alt="${recipe.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/600x400/e2e8f0/475569?text=Рецепт'">
+                            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium text-gray-700 shadow-sm">
+                                <i class="fa-solid fa-clock mr-1 text-cookidoo-green"></i> ${recipe.time || '—'}
+                            </div>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <span class="text-xs font-semibold text-cookidoo-green uppercase tracking-wider mb-1 block">Мое творение</span>
+                                <h3 class="font-bold text-gray-900 text-base line-clamp-2 group-hover:text-cookidoo-green transition">${recipe.title}</h3>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                                <span><i class="fa-solid fa-user-group mr-1"></i> ${recipe.portions || '1 порция'}</span>
+                                <span class="text-cookidoo-green font-semibold">Смотреть рецепт &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            getRecipeWord(count) {
+                if (count % 10 === 1 && count % 100 !== 11) return 'рецепт';
+                if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) return 'рецепта';
+                return 'рецептов';
+            }
+
+            handleSearch(query) {
+                this.currentFilter = query;
+                this.render();
+            }
+
+            showHome() {
+                document.getElementById('homeView').classList.remove('hidden');
+                document.getElementById('detailView').classList.add('hidden');
+                this.activeRecipeId = null;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            openDetail(id) {
+                const recipe = this.recipes.find(r => r.id === id);
+                if (!recipe) return;
+                this.activeRecipeId = id;
+
+                document.getElementById('homeView').classList.add('hidden');
+                document.getElementById('detailView').classList.remove('hidden');
+
+                const detailContent = document.getElementById('recipeDetailContent');
+                detailContent.innerHTML = `
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
+                        <div class="lg:col-span-5 relative min-h-[300px] lg:min-h-full bg-gray-100">
+                            <img src="${recipe.image || 'https://placehold.co/600x800/e2e8f0/475569?text=Рецепт'}" alt="${recipe.title}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x800/e2e8f0/475569?text=Рецепт'">
+                        </div>
+                        <div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-start justify-between gap-4 mb-2">
+                                    <div>
+                                        <span class="text-xs font-semibold uppercase tracking-wider text-cookidoo-green bg-green-50 px-2.5 py-1 rounded-md inline-block mb-2">Рецепт создан вами</span>
+                                        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">${recipe.title}</h1>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button onclick="app.openEditModal('${recipe.id}')" title="Редактировать" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center transition">
+                                            <i class="fa-solid fa-pen text-sm"></i>
+                                        </button>
+                                        <button onclick="app.deleteRecipe('${recipe.id}')" title="Удалить" class="w-10 h-10 rounded-full bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition">
+                                            <i class="fa-solid fa-trash text-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-6 my-4 py-3 border-y border-gray-100 text-sm text-gray-600">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fa-regular fa-clock text-cookidoo-green text-lg"></i>
+                                        <span>Общее время: <strong>${recipe.time || '—'}</strong></span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fa-solid fa-utensils text-cookidoo-green text-lg"></i>
+                                        <span>Порции: <strong>${recipe.portions || '—'}</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex flex-wrap gap-3">
+                                <button onclick="alert('Рецепт успешно добавлен в план питания на сегодня!')" class="bg-cookidoo-green hover:bg-cookidoo-darkGreen text-white px-6 py-3 rounded-full font-medium text-sm transition shadow-sm flex items-center">
+                                    <i class="fa-solid fa-calendar-day mr-2"></i> В меню сегодня
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 p-6 sm:p-8 bg-gray-50 border-t border-gray-200">
+                        <!-- Ingredients Box -->
+                        <div class="md:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fa-solid fa-basket-shopping text-cookidoo-green mr-2"></i> Ингредиенты
+                            </h3>
+                            <ul class="space-y-3">
+                                ${recipe.ingredients.map(ing => `
+                                    <li class="flex items-start text-sm text-gray-700 pb-2 border-b border-gray-100 last:border-none">
+                                        <span class="w-2 h-2 rounded-full bg-cookidoo-green mt-1.5 mr-3 flex-shrink-0"></span>
+                                        <span>${ing}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+
+                        <!-- Preparation / Steps Box -->
+                        <div class="md:col-span-7 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fa-solid fa-hat-chef text-cookidoo-green mr-2"></i> Приготовление
+                            </h3>
+                            <ol class="space-y-4">
+                                ${recipe.steps.map((step, idx) => `
+                                    <li class="flex items-start text-sm text-gray-700">
+                                        <span class="font-bold text-cookidoo-green mr-3 w-6 flex-shrink-0">${idx + 1}.</span>
+                                        <div class="flex-1">${step}</div>
+                                    </li>
+                                `).join('')}
+                            </ol>
+                        </div>
+                    </div>
+                `;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            openAddModal() {
+                document.getElementById('modalTitle').textContent = 'Новый рецепт';
+                document.getElementById('recipeForm').reset();
+                document.getElementById('recipeId').value = '';
+                document.getElementById('recipeModal').classList.remove('hidden');
+            }
+
+            openEditModal(id) {
+                const recipe = this.recipes.find(r => r.id === id);
+                if (!recipe) return;
+
+                document.getElementById('modalTitle').textContent = 'Редактировать рецепт';
+                document.getElementById('recipeId').value = recipe.id;
+                document.getElementById('recipeTitle').value = recipe.title;
+                document.getElementById('recipeTime').value = recipe.time;
+                document.getElementById('recipePortions').value = recipe.portions;
+                document.getElementById('recipeImage').value = recipe.image;
+                document.getElementById('recipeIngredients').value = recipe.ingredients.join('\n');
+                document.getElementById('recipeSteps').value = recipe.steps.join('\n');
+
+                document.getElementById('recipeModal').classList.remove('hidden');
+            }
+
+            closeModal() {
+                document.getElementById('recipeModal').classList.add('hidden');
+            }
+
+            saveRecipe(e) {
+                e.preventDefault();
+                const id = document.getElementById('recipeId').value;
+                const title = document.getElementById('recipeTitle').value.trim();
+                const time = document.getElementById('recipeTime').value.trim();
+                const portions = document.getElementById('recipePortions').value.trim();
+                const image = document.getElementById('recipeImage').value.trim();
+                const ingredientsRaw = document.getElementById('recipeIngredients').value;
+                const stepsRaw = document.getElementById('recipeSteps').value;
+
+                const ingredients = ingredientsRaw.split('\n').map(i => i.trim()).filter(Boolean);
+                const steps = stepsRaw.split('\n').map(s => s.trim()).filter(Boolean);
+
+                if (id) {
+                    // Update existing
+                    const index = this.recipes.findIndex(r => r.id === id);
+                    if (index !== -1) {
+                        this.recipes[index] = { ...this.recipes[index], title, time, portions, image, ingredients, steps };
+                    }
+                } else {
+                    // Create new
+                    const newRecipe = {
+                        id: 'rec_' + Date.now(),
+                        title,
+                        time: time || '30 мин',
+                        portions: portions || '4 порции',
+                        image: image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80',
+                        ingredients,
+                        steps
+                    };
+                    this.recipes.unshift(newRecipe);
+                }
+
+                this.saveToStorage();
+                this.closeModal();
+                this.render();
+
+                if (this.activeRecipeId) {
+                    this.openDetail(this.activeRecipeId);
+                }
+            }
+
+            deleteRecipe(id) {
+                if (confirm('Вы действительно хотите удалить этот рецепт?')) {
+                    this.recipes = this.recipes.filter(r => r.id !== id);
+                    this.saveToStorage();
+                    this.showHome();
+                    this.render();
+                }
+            }
+        }
+
+        // Initialize App
+        const app = new RecipeApp();
+    </script>
+</body>
+</html>
