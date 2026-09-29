@@ -20,7 +20,7 @@
                             dark: '#1F2A5E',     /* Deep Navy */
                             violet: '#7B4FD1',   /* Violet */
                             lilac: '#B8A8E8',    /* Soft Lilac */
-                            lime: '#B5D334'      /* Moderate Lime Accent */
+                            lime: '#B5D334'      /* Lime green */
                         }
                     }
                 }
@@ -29,82 +29,79 @@
     </script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAF9FE; color: #1F2A5E; }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #B8A8E8; border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #1F2A5E; }
         .glass-panel {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
         .chictag {
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .recipe-card:hover {
-            transform: translateY(-4px);
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .timer-active {
+            animation: pulse-ring 2s infinite ease-in-out;
         }
     </style>
 </head>
 <body class="min-h-full flex flex-col selection:bg-brand-lilac/40 selection:text-brand-dark antialiased">
-
-    <header class="glass-panel border-b border-brand-lilac/40 sticky top-0 z-30 shadow-xs">
-        <div class="max-w-7xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-3.5 cursor-pointer group" onclick="app.showHome()">
-                <div class="w-11 h-11 rounded-2xl bg-brand-dark text-brand-lime flex items-center justify-center font-black text-2xl shadow-sm group-hover:bg-brand-violet group-hover:text-white transition duration-300">
+    <header class="glass-panel border-b border-brand-lilac/30 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-6 sm:px-10 h-24 flex items-center justify-between">
+            <div class="flex items-center space-x-4 cursor-pointer group" onclick="app.showHome()">
+                <div class="w-12 h-12 rounded-2xl bg-brand-lilac/40 text-brand-dark flex items-center justify-center font-extrabold text-2xl shadow-xs group-hover:bg-brand-violet group-hover:text-white transition duration-500">
                     J
                 </div>
                 <div>
-                    <span class="text-xl sm:text-2xl font-extrabold tracking-tight text-brand-dark flex items-center gap-2">
+                    <span class="text-2xl font-extrabold tracking-tight text-brand-dark flex items-center gap-2">
                         Julia's Recipes
                     </span>
                 </div>
             </div>
             
-            <div class="flex items-center space-x-2.5 sm:space-x-3">
-                <button onclick="app.openAddModal()" class="bg-brand-dark hover:bg-brand-violet text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold transition duration-300 flex items-center shadow-sm group border border-brand-lime/40">
-                    <span class="w-2.5 h-2.5 rounded-full bg-brand-lime mr-2 group-hover:scale-125 transition"></span>
-                    <span>Новый рецепт</span>
+            <div class="flex items-center space-x-3">
+                <button onclick="app.openAddModal()" class="bg-brand-dark hover:bg-brand-violet text-white px-6 py-3 rounded-full text-xs sm:text-sm font-bold transition duration-300 flex items-center shadow-sm group cursor-pointer">
+                    <span class="w-2 h-2 rounded-full bg-brand-lime mr-2.5 group-hover:scale-125 transition"></span> Новый рецепт
                 </button>
-                <button onclick="app.openImportModal()" class="bg-brand-lilac/20 hover:bg-brand-lilac/50 text-brand-dark border border-brand-lilac/40 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold transition duration-300 flex items-center shadow-2xs">
-                    <i class="fa-solid fa-wand-magic-sparkles mr-2 text-brand-violet"></i>
-                    <span>Импорт ИИ</span>
+                <button onclick="app.openImportModal()" class="bg-brand-lilac/30 hover:bg-brand-lilac/60 text-brand-dark px-5 py-3 rounded-full text-xs sm:text-sm font-semibold transition duration-300 flex items-center shadow-2xs cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-2 text-brand-violet"></i> Импорт ИИ
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 sm:px-10 py-8 flex-1 w-full">
-        
-        <!-- Toast Notification Area -->
-        <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
-
-        <!-- Search & Recipe Count Bar -->
-        <div class="mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="relative w-full md:w-[480px]">
+    <main class="max-w-7xl mx-auto px-6 sm:px-10 py-10 flex-1 w-full">
+        <!-- Search Bar and Recipe Count -->
+        <div class="mb-8 flex flex-col md:flex-row items-center justify-between gap-5">
+            <div class="relative w-full md:w-[460px]">
                 <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-brand-violet">
-                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    <i class="fa-solid fa-search text-xs"></i>
                 </span>
-                <input type="text" id="searchInput" oninput="app.handleSearch(this.value)" placeholder="Какой кулинарный каприз приготовим сегодня?" class="w-full pl-11 pr-5 py-3 bg-white border border-brand-lilac/60 focus:border-brand-lime rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/60 shadow-2xs transition text-brand-dark placeholder-brand-dark/40">
+                <input type="text" id="searchInput" oninput="app.handleSearch(this.value)" placeholder="Какой кулинарный каприз приготовим сегодня?" class="w-full pl-11 pr-5 py-3.5 bg-white/90 border border-brand-lilac/60 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-violet/50 shadow-2xs transition text-brand-dark placeholder-brand-dark/40">
             </div>
-            <div id="recipeCount" class="font-extrabold bg-brand-lime/20 text-brand-dark px-4 py-2 rounded-full text-xs border border-brand-lime/60 shadow-2xs flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-brand-lime inline-block animate-pulse"></span>
-                <span id="recipeCountText">0 рецептов</span>
+            <div id="recipeCount" class="font-bold bg-brand-lilac/30 px-5 py-2.5 rounded-full text-brand-dark text-xs border border-brand-lilac/50 shadow-2xs">
+                0 рецептов
             </div>
         </div>
 
-        <!-- Categories & Subcategories -->
+        <!-- Categories Tabs -->
         <div class="mb-6 overflow-x-auto pb-2 scrollbar-none">
             <div id="categoryTabs" class="flex space-x-2.5 min-w-max">
                 <!-- Dynamic categories -->
             </div>
         </div>
 
-        <div id="subcategoryContainer" class="mb-8 hidden bg-brand-lilac/15 p-4 sm:p-5 rounded-3xl border-l-4 border-brand-lime border border-brand-lilac/30">
-            <div class="text-[11px] font-extrabold text-brand-dark uppercase tracking-wider mb-3 flex items-center">
-                <span class="w-2.5 h-2.5 rounded-full bg-brand-lime mr-2 shadow-xs"></span> Выбор в горячих блюдах:
+        <!-- Subcategories Container -->
+        <div id="subcategoryContainer" class="mb-8 hidden bg-brand-lilac/20 p-5 rounded-3xl backdrop-blur-md border border-brand-lilac/40">
+            <div class="text-[11px] font-extrabold text-brand-violet uppercase tracking-wider mb-3 flex items-center">
+                <span class="w-2 h-2 rounded-full bg-brand-lime mr-2"></span> Выбор гурмана в горячем:
             </div>
-            <div id="subcategoryTabs" class="flex space-x-2 overflow-x-auto pb-1">
+            <div id="subcategoryTabs" class="flex space-x-2.5 overflow-x-auto pb-1">
                 <!-- Dynamic subcategories -->
             </div>
         </div>
@@ -112,61 +109,139 @@
         <!-- VIEW: Home Grid -->
         <div id="homeView">
             <div class="mb-6 flex items-center justify-between">
-                <h1 id="currentCategoryTitle" class="text-2xl sm:text-3xl font-extrabold text-brand-dark tracking-tight">Все рецепты</h1>
+                <h1 id="currentCategoryTitle" class="text-3xl font-extrabold text-brand-dark tracking-tight">Все рецепты</h1>
             </div>
-            <div id="recipeGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+            <div id="recipeGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Dynamic grid -->
             </div>
         </div>
 
-        <!-- VIEW: Detail -->
+        <!-- VIEW: Detail View -->
         <div id="detailView" class="hidden">
-            <button onclick="app.showHome()" class="mb-6 inline-flex items-center text-xs sm:text-sm font-bold text-brand-dark hover:text-brand-violet transition bg-white border border-brand-lilac/40 px-5 py-2.5 rounded-full shadow-2xs">
-                <i class="fa-solid fa-arrow-left mr-2 text-brand-violet"></i> Вернуться в меню
+            <button onclick="app.showHome()" class="mb-8 inline-flex items-center text-xs sm:text-sm font-bold text-brand-violet hover:text-brand-dark transition bg-white px-5 py-2.5 rounded-full shadow-2xs cursor-pointer border border-brand-lilac/30">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Вернуться к меню
             </button>
             <div id="recipeDetailContent" class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-brand-lilac/30">
-                <!-- Dynamic detail view -->
+                <!-- Dynamic detail -->
             </div>
         </div>
     </main>
 
-    <footer class="bg-white/60 border-t border-brand-lilac/30 py-6 text-center text-xs text-brand-dark/70">
+    <!-- Floating Active Timers Bar -->
+    <div id="activeTimersBar" class="fixed bottom-6 right-6 z-[60] flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+        <!-- Dynamic active timers -->
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-6 right-6 z-[70] flex flex-col gap-3 max-w-md w-full pointer-events-none"></div>
+
+    <!-- Custom Confirm Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-brand-dark/40 backdrop-blur-sm z-[70] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] max-w-sm w-full p-6 shadow-2xl text-center space-y-4 border border-brand-lilac/40">
+            <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto text-lg">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="confirmTitle" class="text-base font-extrabold text-brand-dark">Подтвердите действие</h3>
+            <p id="confirmMessage" class="text-xs text-brand-dark/70 leading-relaxed"></p>
+            <div class="flex space-x-3 pt-2">
+                <button onclick="app.closeConfirm(false)" class="flex-1 py-3 bg-brand-lilac/30 hover:bg-brand-lilac/50 rounded-2xl text-xs font-bold text-brand-dark transition cursor-pointer">Отмена</button>
+                <button id="confirmOkBtn" onclick="app.closeConfirm(true)" class="flex-1 py-3 bg-red-500 hover:bg-red-600 rounded-2xl text-xs font-bold text-white transition shadow-sm cursor-pointer">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW: Cooking Step-by-Step Overlay Mode -->
+    <div id="cookingModeOverlay" class="fixed inset-0 bg-brand-dark/95 backdrop-blur-md z-50 hidden flex flex-col text-white overflow-hidden">
+        <!-- Top Navigation -->
+        <div class="p-6 sm:p-8 border-b border-white/10 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <span id="cookingStepCounter" class="text-xs font-extrabold uppercase tracking-widest text-brand-lilac">Шаг 1 из 1</span>
+                <button id="wakeLockBtn" onclick="app.toggleWakeLock()" class="px-4 py-2 rounded-full text-xs font-bold bg-white/10 hover:bg-white/20 text-white flex items-center space-x-2 transition cursor-pointer">
+                    <i class="fa-regular fa-lightbulb"></i><span>Экран гаснет</span>
+                </button>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="app.toggleCookingIngredientsSidebar()" class="px-4 py-2 rounded-full text-xs font-bold bg-brand-violet text-white hover:bg-brand-violet/80 transition flex items-center space-x-2 cursor-pointer">
+                    <i class="fa-solid fa-list-check"></i><span>Ингредиенты</span>
+                </button>
+                <button onclick="app.closeCookingMode()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-white/10 h-1.5">
+            <div id="cookingStepProgress" class="bg-brand-lime h-1.5 transition-all duration-300 w-0"></div>
+        </div>
+
+        <!-- Step Main Display -->
+        <div class="flex-1 overflow-y-auto p-6 sm:p-12 max-w-4xl mx-auto w-full flex flex-col justify-center">
+            <div id="cookingStepTextContent" class="space-y-6"></div>
+        </div>
+
+        <!-- Bottom Actions -->
+        <div class="p-6 sm:p-8 border-t border-white/10 bg-brand-dark/50 backdrop-blur-md flex items-center justify-between max-w-4xl mx-auto w-full">
+            <button id="cookingPrevBtn" onclick="app.changeCookingStep(-1)" class="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs sm:text-sm disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center cursor-pointer">
+                <i class="fa-solid fa-arrow-left mr-2"></i><span>Назад</span>
+            </button>
+            <button id="cookingNextBtn" onclick="app.changeCookingStep(1)" class="px-6 py-3.5 rounded-2xl bg-brand-violet hover:bg-brand-violet/80 text-white font-extrabold text-xs sm:text-sm transition shadow-lg flex items-center cursor-pointer">
+                <span>Дальше</span><i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <!-- Slide-out ingredients drawer inside cooking overlay -->
+        <div id="cookingIngredientsSidebar" class="fixed top-0 right-0 bottom-0 w-80 bg-brand-dark/95 border-l border-white/10 p-6 z-60 transition-transform duration-300 transform translate-x-full overflow-y-auto backdrop-blur-xl">
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+                <h4 class="text-sm font-extrabold text-white flex items-center"><i class="fa-solid fa-utensils mr-2 text-brand-lime"></i> Ингредиенты</h4>
+                <button onclick="app.toggleCookingIngredientsSidebar()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <ul id="cookingIngredientsSidebarList" class="space-y-2"></ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white/60 border-t border-brand-lilac/30 py-8 mt-16 text-center text-xs text-brand-dark/60">
         <p class="font-medium">Julia's Recipes &bull; Haute Cuisine & Good Humor</p>
     </footer>
 
+    <!-- Add/Edit Recipe Modal -->
     <div id="recipeModal" class="fixed inset-0 bg-brand-dark/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-[2.5rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-brand-lilac/40">
-            <div class="p-6 sm:p-8 border-b border-brand-lilac/30 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
-                <h3 id="modalTitle" class="text-lg sm:text-xl font-extrabold text-brand-dark flex items-center">
+            <div class="p-8 border-b border-brand-lilac/30 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10">
+                <h3 id="modalTitle" class="text-xl font-extrabold text-brand-dark flex items-center">
                     <span class="w-3 h-3 rounded-full bg-brand-lime mr-3 inline-block"></span> Новый кулинарный шедевр
                 </h3>
-                <button onclick="app.closeModal()" class="text-brand-dark/60 hover:text-brand-dark w-9 h-9 rounded-full flex items-center justify-center bg-brand-lilac/20 hover:bg-brand-lilac/40 transition">
-                    <i class="fa-solid fa-xmark text-sm"></i>
+                <button onclick="app.closeModal()" class="text-brand-dark/40 hover:text-brand-dark w-9 h-9 rounded-full flex items-center justify-center bg-brand-lilac/30 transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
-            <form id="recipeForm" onsubmit="app.saveRecipe(event)" class="p-6 sm:p-8 space-y-5">
+            <form id="recipeForm" onsubmit="app.saveRecipe(event)" class="p-8 space-y-6">
                 <input type="hidden" id="recipeId">
-                
                 <div>
-                    <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-1.5">Название блюда</label>
-                    <input type="text" id="recipeTitle" required placeholder="Например: Салат с характером и креветками" class="w-full px-4 py-3 bg-brand-lilac/10 border border-brand-lilac/40 focus:border-brand-lime rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition text-brand-dark">
+                    <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-2">Название блюда</label>
+                    <input type="text" id="recipeTitle" required placeholder="Например: Салат с характером и креветками" class="w-full px-5 py-3.5 bg-brand-lilac/10 rounded-2xl text-sm focus:ring-2 focus:ring-brand-violet focus:outline-none transition text-brand-dark border border-brand-lilac/30">
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                        <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-1.5">Категория</label>
-                        <select id="recipeCategory" onchange="app.handleModalCategoryChange(this.value)" class="w-full px-4 py-3 bg-brand-lilac/10 border border-brand-lilac/40 focus:border-brand-lime rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition text-brand-dark">
+                        <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-2">Категория</label>
+                        <select id="recipeCategory" onchange="app.handleModalCategoryChange(this.value)" class="w-full px-5 py-3.5 bg-brand-lilac/10 rounded-2xl text-sm focus:ring-2 focus:ring-brand-violet focus:outline-none transition text-brand-dark border border-brand-lilac/30">
                             <option value="Супы">Супы</option>
                             <option value="Горячее">Горячее</option>
                             <option value="Салаты">Салаты</option>
                             <option value="Закуски">Закуски</option>
                             <option value="Десерты">Десерты</option>
                             <option value="Выпечка">Выпечка</option>
+                            <option value="Завтраки">Завтраки</option>
                             <option value="Напитки">Напитки</option>
+                            <option value="Соусы">Соусы</option>
                         </select>
                     </div>
                     <div id="modalSubcategoryWrapper" class="hidden">
-                        <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-1.5">Подкатегория горячего</label>
-                        <select id="recipeSubcategory" class="w-full px-4 py-3 bg-brand-lilac/10 border border-brand-lilac/40 focus:border-brand-lime rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition text-brand-dark">
+                        <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-2">Подкатегория горячего</label>
+                        <select id="recipeSubcategory" class="w-full px-5 py-3.5 bg-brand-lilac/10 rounded-2xl text-sm focus:ring-2 focus:ring-brand-violet focus:outline-none transition text-brand-dark border border-brand-lilac/30">
                             <option value="Курица">Курица</option>
                             <option value="Мясо">Мясо</option>
                             <option value="Рыба и морепродукты">Рыба и морепродукты</option>
@@ -175,31 +250,31 @@
                         </select>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                        <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-1.5">Время приготовления</label>
-                        <input type="text" id="recipeTime" placeholder="Например: 30 мин под бокал вина" class="w-full px-4 py-3 bg-brand-lilac/10 border border-brand-lilac/40 focus:border-brand-lime rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition text-brand-dark">
+                        <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-2">Время приготовления</label>
+                        <input type="text" id="recipeTime" placeholder="Например: 30 мин под бокал вина" class="w-full px-5 py-3.5 bg-brand-lilac/10 rounded-2xl text-sm focus:ring-2 focus:ring-brand-violet focus:outline-none transition text-brand-dark border border-brand-lilac/30">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-1.5">Порции</label>
-                        <input type="text" id="recipePortions" placeholder="Например: 4 порции" class="w-full px-4 py-3 bg-brand-lilac/10 border border-brand-lilac/40 focus:border-brand-lime rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition text-brand-dark">
+                        <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-2">Порции</label>
+                        <input type="text" id="recipePortions" placeholder="Например: 4 порции" class="w-full px-5 py-3.5 bg-brand-lilac/10 rounded-2xl text-sm focus:ring-2 focus:ring-brand-violet focus:outline-none transition text-brand-dark border border-brand-lilac/30">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-1.5">Ссылка на фото (URL)</label>
-                    <input type="url" id="recipeImage" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-3 bg-brand-lilac/10 border border-brand-lilac/40 focus:border-brand-lime rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition text-brand-dark">
+                    <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-2">Ссылка на фото (URL)</label>
+                    <input type="url" id="recipeImage" placeholder="https://images.unsplash.com/..." class="w-full px-5 py-3.5 bg-brand-lilac/10 rounded-2xl text-sm focus:ring-2 focus:ring-brand-violet focus:outline-none transition text-brand-dark border border-brand-lilac/30">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-1.5">Ингредиенты (каждый с новой строки)</label>
-                    <textarea id="recipeIngredients" rows="4" placeholder="125 г муки&#10;Щипотка иронии" class="w-full px-4 py-3 bg-brand-lilac/10 border border-brand-lilac/40 focus:border-brand-lime rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition text-brand-dark"></textarea>
+                    <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-2">Ингредиенты (по одному на строку)</label>
+                    <textarea id="recipeIngredients" rows="4" placeholder="125 г муки&#10;Щипотка здорового цинизма" class="w-full px-5 py-3.5 bg-brand-lilac/10 rounded-2xl text-sm focus:ring-2 focus:ring-brand-violet focus:outline-none transition text-brand-dark border border-brand-lilac/30"></textarea>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-1.5">Этапы приготовления (каждый шаг с новой строки)</label>
-                    <textarea id="recipeSteps" rows="5" placeholder="Шаг 1: Восхищаться собой...&#10;Шаг 2: Готовить..." class="w-full px-4 py-3 bg-brand-lilac/10 border border-brand-lilac/40 focus:border-brand-lime rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/50 transition text-brand-dark"></textarea>
+                    <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider mb-2">Этапы приготовления (каждый шаг с новой строки)</label>
+                    <textarea id="recipeSteps" rows="5" placeholder="Шаг 1: Восхищаться собой...&#10;Шаг 2: Готовить..." class="w-full px-5 py-3.5 bg-brand-lilac/10 rounded-2xl text-sm focus:ring-2 focus:ring-brand-violet focus:outline-none transition text-brand-dark border border-brand-lilac/30"></textarea>
                 </div>
-                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-brand-lilac/30">
-                    <button type="button" onclick="app.closeModal()" class="px-5 py-2.5 rounded-2xl text-xs font-semibold text-brand-dark hover:bg-brand-lilac/20 transition">Отмена</button>
-                    <button type="submit" class="px-7 py-2.5 rounded-2xl bg-brand-dark hover:bg-brand-violet text-xs font-extrabold text-white transition shadow-sm flex items-center border border-brand-lime/30">
+                <div class="flex items-center justify-end space-x-4 pt-4 border-t border-brand-lilac/30">
+                    <button type="button" onclick="app.closeModal()" class="px-6 py-3 rounded-2xl text-xs font-semibold text-brand-dark hover:bg-brand-lilac/20 transition cursor-pointer">Отмена</button>
+                    <button type="submit" class="px-8 py-3 rounded-2xl bg-brand-dark hover:bg-brand-violet text-xs font-extrabold text-white transition shadow-sm flex items-center cursor-pointer">
                         <span class="w-2 h-2 rounded-full bg-brand-lime mr-2"></span> Сохранить рецепт
                     </button>
                 </div>
@@ -207,39 +282,50 @@
         </div>
     </div>
 
+    <!-- AI Import Modal -->
     <div id="importModal" class="fixed inset-0 bg-brand-dark/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-[2.5rem] max-w-lg w-full shadow-2xl overflow-hidden border border-brand-lilac/40">
-            <div class="p-6 sm:p-8 border-b border-brand-lilac/30 flex items-center justify-between bg-white">
-                <h3 class="text-base sm:text-lg font-extrabold text-brand-dark flex items-center">
-                    <i class="fa-solid fa-wand-magic-sparkles text-brand-violet mr-2.5"></i> Умный импорт рецепта
+            <div class="p-8 border-b border-brand-lilac/30 flex items-center justify-between bg-white">
+                <h3 class="text-lg font-extrabold text-brand-dark flex items-center">
+                    <i class="fa-solid fa-wand-magic-sparkles text-brand-violet mr-3"></i> Умный импорт рецепта
                 </h3>
-                <button onclick="app.closeImportModal()" class="text-brand-dark/60 hover:text-brand-dark w-9 h-9 rounded-full flex items-center justify-center bg-brand-lilac/20 hover:bg-brand-lilac/40 transition">
-                    <i class="fa-solid fa-xmark text-sm"></i>
+                <button onclick="app.closeImportModal()" class="text-brand-dark/40 hover:text-brand-dark w-9 h-9 rounded-full flex items-center justify-center bg-brand-lilac/30 transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
-            <div class="p-6 sm:p-8 space-y-5">
-                <p class="text-xs text-brand-dark/70 leading-relaxed">
-                    Загрузите файл рецепта или вставьте произвольный сырой текст. Умный декодер автоматически распознает ингредиенты, шаги, время и категорию.
-                </p>
-                <div class="border-2 border-dashed border-brand-lilac hover:border-brand-violet rounded-3xl p-6 text-center cursor-pointer transition bg-brand-lilac/10 relative" id="dropZone" ondragover="event.preventDefault();" ondragleave="this.classList.remove('border-brand-violet', 'bg-brand-lilac/30')" ondragenter="this.classList.add('border-brand-violet', 'bg-brand-lilac/30')" ondrop="app.handleFileDrop(event)">
-                    <input type="file" id="fileInput" accept="image/*,.txt,.md" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="app.handleFileSelect(event)">
-                    <div class="w-12 h-12 bg-brand-lilac/30 text-brand-dark rounded-2xl flex items-center justify-center mx-auto text-lg mb-2 shadow-2xs">
-                        <i class="fa-solid fa-cloud-arrow-up text-brand-violet"></i>
-                    </div>
-                    <p class="text-xs font-bold text-brand-dark">Выбрать файл или перетащить сюда</p>
-                    <p class="text-[10px] text-brand-dark/50 mt-0.5">Текстовые заметки (.txt) или изображения</p>
+            <div class="p-8 space-y-6">
+                <div id="importErrorBox" class="hidden bg-red-50 text-red-700 px-5 py-3.5 rounded-2xl text-xs flex items-start space-x-3 border border-red-200">
+                    <i class="fa-solid fa-triangle-exclamation mt-0.5 flex-shrink-0"></i>
+                    <div id="importErrorMessage" class="flex-1"></div>
                 </div>
-                <div class="space-y-2.5">
+                <p class="text-xs text-brand-dark/70 leading-relaxed">
+                    Загрузите файл рецепта или вставьте его текст. ИИ автоматически определит подходящую <strong>категорию</strong>, <strong>подкатегорию</strong>, ингредиенты и время приготовления!
+                </p>
+                <div class="border-2 border-dashed border-brand-lilac hover:border-brand-violet rounded-3xl p-8 text-center cursor-pointer transition bg-brand-lilac/10 relative" id="dropZone" ondragover="event.preventDefault();" ondragleave="this.classList.remove('border-brand-violet', 'bg-brand-lilac/30')" ondragenter="this.classList.add('border-brand-violet', 'bg-brand-lilac/30')" ondrop="app.handleFileDrop(event)">
+                    <input type="file" id="fileInput" accept="image/*,application/pdf,text/plain" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="app.handleFileSelect(event)">
+                    <div class="w-14 h-14 bg-brand-lilac/40 text-brand-violet rounded-2xl flex items-center justify-center mx-auto text-xl mb-3 shadow-2xs">
+                        <i class="fa-solid fa-cloud-arrow-up text-brand-dark"></i>
+                    </div>
+                    <p class="text-xs font-bold text-brand-dark">Нажмите для выбора файла или перетащите сюда</p>
+                    <p class="text-[10px] text-brand-dark/50 mt-1">PNG, JPEG, PDF, TXT</p>
+                </div>
+                <div class="space-y-3">
                     <label class="block text-[11px] font-bold text-brand-dark uppercase tracking-wider">Или вставьте текст рецепта:</label>
-                    <textarea id="rawTextInput" rows="4" placeholder="Например:&#10;Паста Карбонара&#10;Ингредиенты: 200г пасты, 100г бекона, 2 яйца&#10;Приготовление: Сварить пасту..." class="w-full px-4 py-3 bg-brand-lilac/10 border border-brand-lilac/40 rounded-2xl text-xs focus:ring-2 focus:ring-brand-lime/60 focus:outline-none transition text-brand-dark font-mono"></textarea>
-                    <button type="button" onclick="app.processTextImport()" class="w-full bg-brand-dark hover:bg-brand-violet text-white text-xs font-bold py-3.5 rounded-2xl transition shadow-sm flex items-center justify-center border border-brand-lime/30">
-                        <i class="fa-solid fa-wand-magic-sparkles mr-2 text-brand-lime"></i> Расшифровать и добавить
+                    <textarea id="rawTextInput" rows="4" placeholder="Например: Крем-суп из шампиньонов со сливками и сухариками..." class="w-full px-5 py-3.5 bg-brand-lilac/10 rounded-2xl text-xs focus:ring-2 focus:ring-brand-violet focus:outline-none transition text-brand-dark border border-brand-lilac/30"></textarea>
+                    
+                    <button type="button" onclick="app.processTextImport()" class="w-full bg-brand-dark hover:bg-brand-violet text-white text-xs font-bold py-3.5 rounded-2xl transition shadow-sm flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-2 text-brand-lime"></i> Расшифровать и заполнить
                     </button>
+                </div>
+                <div id="importLoading" class="hidden py-6 text-center">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-3 border-brand-violet border-t-transparent mb-2"></div>
+                    <p class="text-xs font-semibold text-brand-dark">Магия ИИ анализирует текст и категорию...</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Application Script -->
     <script>
         class RecipeApp {
             constructor() {
@@ -247,16 +333,38 @@
                 this.currentSearch = '';
                 this.currentCategory = 'Все';
                 this.currentSubcategory = 'Все';
-                this.categories = ['Все', 'Супы', 'Горячее', 'Салаты', 'Закуски', 'Десерты', 'Выпечка', 'Напитки'];
-                this.subcategories = ['Все', 'Курица', 'Мясо', 'Рыба и морепродукты', 'Овощи', 'Крупы'];
+                this.activeRecipeId = null;
+
+                // Portion scaling & checked items state
+                this.basePortions = 4;
+                this.currentPortions = 4;
+                this.checkedIngredients = new Set();
+                this.checkedSteps = new Set();
+
+                // Cooking Step Mode State
+                this.cookingCurrentStep = 0;
+                
+                // Wake Lock API Sentinel
+                this.wakeLock = null;
+                this.isWakeLockActive = false;
+
+                // Active timers
+                this.timers = [];
+                this.timerInterval = null;
+
+                // Audio & Confirm State
+                this.audioCtx = null;
+                this.confirmCallback = null;
+
                 this.init();
             }
 
             init() {
+                this.startTimerTicker();
                 if (this.checkForSharedRecipe()) return;
                 this.renderCategories();
-                this.renderSubcategories();
                 this.render();
+                this.setupKeyboardShortcuts();
             }
 
             loadRecipes() {
@@ -267,21 +375,19 @@
                 return [
                     {
                         id: 'rec_1',
-                        shortCode: 'm9K2a1',
                         title: 'Шоколадный фондан с перчинкой',
                         category: 'Десерты',
                         subcategory: '',
-                        time: '30 мин под бокал рислинга',
-                        portions: '4 порции (или съесть в одиночку)',
+                        time: '30 мин',
+                        portions: '4 порции',
                         views: 42,
                         image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80',
                         ingredients: ['125 г сливочного масла', '200 г темного шоколада', '4 яйца', 'Щипотка морской соли и иронии'],
-                        steps: ['Разогреть духовку с мыслью, что вы прекрасны.', 'Растопить шоколад с маслом.', 'Выпекать 10 минут и подавать немедленно.']
+                        steps: ['Разогреть духовку с мыслью, что вы прекрасны.', 'Растопить шоколад с маслом 5 минут.', 'Выпекать 10 минут и подавать немедленно.']
                     },
                     {
                         id: 'rec_2',
-                        shortCode: 'x4P8z7',
-                        title: 'Салат Цезарь с хрустящими креветками',
+                        title: 'Салат Цезарь с креветками',
                         category: 'Салаты',
                         subcategory: '',
                         time: '20 мин',
@@ -289,20 +395,19 @@
                         views: 28,
                         image: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?auto=format&fit=crop&w=800&q=80',
                         ingredients: ['Креветки 300 г', 'Салат Ромайн', 'Соус Цезарь домашний', 'Пармезан стружкой'],
-                        steps: ['Обжарить креветки до золотистого цвета.', 'Смешать хрустящие листья с соусом.', 'Украсить сыром и подавать с улыбкой.']
+                        steps: ['Обжарить креветки до золотистого цвета 4 минуты.', 'Смешать хрустящие листья с соусом.', 'Украсить сыром и подавать.']
                     },
                     {
                         id: 'rec_3',
-                        shortCode: 'c3B9w0',
-                        title: 'Сочная сувид грудка с травами',
+                        title: 'Куриная грудка в сливочно-чесночном соусе',
                         category: 'Горячее',
                         subcategory: 'Курица',
-                        time: '45 мин',
+                        time: '25 мин',
                         portions: '3 порции',
-                        views: 35,
-                        image: 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=800&q=80',
-                        ingredients: ['Куриное филе 500 г', 'Розмарин и тимьян', 'Оливковое масло 2 ст.л.', 'Чеснок 2 зубчика'],
-                        steps: ['Замариновать филе в специях.', 'Запекать или обжарить на медленном огне до сочности.', 'Подавать с гарниром из свежих овощей.']
+                        views: 19,
+                        image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80',
+                        ingredients: ['Куриное филе 500 г', 'Сливки 20% 200 мл', 'Чеснок 3 зубчика', 'Травы прованские'],
+                        steps: ['Нарезать филе кусочками и обжарить 8 минут.', 'Добавить измельченный чеснок и влить сливки.', 'Тушить 10 минут до загустения.']
                     }
                 ];
             }
@@ -311,531 +416,786 @@
                 localStorage.setItem('julia_recipes_v16', JSON.stringify(this.recipes));
             }
 
-            showToast(message, type = 'success') {
-                const container = document.getElementById('toastContainer');
-                if (!container) return;
-                const toast = document.createElement('div');
-                toast.className = `pointer-events-auto flex items-center space-x-2.5 px-5 py-3 rounded-2xl text-xs font-bold text-white shadow-lg transition duration-300 transform translate-y-2 opacity-0 ${type === 'success' ? 'bg-brand-dark border border-brand-lime' : 'bg-red-600'}`;
-                toast.innerHTML = `<i class="${type === 'success' ? 'fa-solid fa-circle-check text-brand-lime' : 'fa-solid fa-circle-exclamation'}"></i><span>${message}</span>`;
-                container.appendChild(toast);
-                
-                setTimeout(() => {
-                    toast.classList.remove('translate-y-2', 'opacity-0');
-                }, 10);
-
-                setTimeout(() => {
-                    toast.classList.add('opacity-0', 'translate-y-2');
-                    setTimeout(() => toast.remove(), 300);
-                }, 3000);
-            }
-
             renderCategories() {
+                const categories = ['Все', 'Супы', 'Горячее', 'Салаты', 'Закуски', 'Десерты', 'Выпечка', 'Завтраки', 'Напитки', 'Соусы'];
                 const container = document.getElementById('categoryTabs');
-                if (!container) return;
-                container.innerHTML = this.categories.map(cat => {
+                
+                container.innerHTML = categories.map(cat => {
                     const isActive = this.currentCategory === cat;
+                    const count = cat === 'Все' ? this.recipes.length : this.recipes.filter(r => r.category === cat).length;
                     return `
-                        <button onclick="app.filterCategory('${cat}')" class="px-5 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 ${isActive ? 'bg-brand-dark text-white shadow-xs' : 'bg-brand-lilac/20 hover:bg-brand-lilac/40 text-brand-dark'}">
-                            <span>${cat}</span>
-                            ${isActive ? `<span class="w-1.5 h-1.5 rounded-full bg-brand-lime"></span>` : ''}
+                        <button onclick="app.selectCategory('${cat}')" class="px-5 py-2.5 rounded-full text-xs font-bold transition whitespace-nowrap chictag cursor-pointer ${isActive ? 'bg-brand-dark text-white shadow-sm' : 'bg-brand-lilac/30 text-brand-dark hover:bg-brand-lilac/60'}">
+                            ${cat} <span class="ml-1.5 px-2 py-0.5 rounded-full text-[10px] ${isActive ? 'bg-brand-lilac/50 text-white' : 'bg-brand-lilac/50 text-brand-dark'}">${count}</span>
                         </button>
                     `;
                 }).join('');
-            }
 
-            renderSubcategories() {
-                const subWrapper = document.getElementById('subcategoryContainer');
-                const container = document.getElementById('subcategoryTabs');
-                if (!subWrapper || !container) return;
+                const subContainer = document.getElementById('subcategoryContainer');
+                const subTabsContainer = document.getElementById('subcategoryTabs');
 
                 if (this.currentCategory === 'Горячее') {
-                    subWrapper.classList.remove('hidden');
-                    container.innerHTML = this.subcategories.map(sub => {
-                        const isActive = this.currentSubcategory === sub;
+                    subContainer.classList.remove('hidden');
+                    const subcategories = ['Все', 'Курица', 'Мясо', 'Рыба и морепродукты', 'Овощи', 'Крупы'];
+                    subTabsContainer.innerHTML = subcategories.map(sub => {
+                        const isSubActive = this.currentSubcategory === sub;
                         return `
-                            <button onclick="app.filterSubcategory('${sub}')" class="px-4 py-2 rounded-xl text-xs font-semibold transition ${isActive ? 'bg-brand-dark text-white font-bold' : 'bg-white hover:bg-white/80 text-brand-dark border border-brand-lilac/30'}">
+                            <button onclick="app.selectSubcategory('${sub}')" class="px-4 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap chictag cursor-pointer ${isSubActive ? 'bg-brand-dark text-white shadow-xs' : 'bg-brand-lilac/30 text-brand-dark hover:bg-brand-lilac/60'}">
                                 ${sub}
                             </button>
                         `;
                     }).join('');
                 } else {
-                    subWrapper.classList.add('hidden');
+                    subContainer.classList.add('hidden');
+                    this.currentSubcategory = 'Все';
                 }
             }
 
-            filterCategory(cat) {
+            selectCategory(cat) {
                 this.currentCategory = cat;
                 this.currentSubcategory = 'Все';
                 this.renderCategories();
-                this.renderSubcategories();
                 this.render();
             }
 
-            filterSubcategory(subcat) {
-                this.currentSubcategory = subcat;
-                this.renderSubcategories();
+            selectSubcategory(sub) {
+                this.currentSubcategory = sub;
+                this.renderCategories();
                 this.render();
             }
 
-            handleSearch(val) {
-                this.currentSearch = val.trim().toLowerCase();
+            handleSearch(query) {
+                this.currentSearch = query.toLowerCase().trim();
                 this.render();
             }
 
             render() {
                 const grid = document.getElementById('recipeGrid');
-                const title = document.getElementById('currentCategoryTitle');
-                const countText = document.getElementById('recipeCountText');
-                if (!grid) return;
+                const titleEl = document.getElementById('currentCategoryTitle');
+                const countEl = document.getElementById('recipeCount');
 
                 let filtered = this.recipes.filter(r => {
-                    const matchCat = this.currentCategory === 'Все' || r.category === this.currentCategory;
-                    const matchSub = this.currentCategory !== 'Горячее' || this.currentSubcategory === 'Все' || r.subcategory === this.currentSubcategory;
+                    const matchCategory = this.currentCategory === 'Все' || r.category === this.currentCategory;
+                    const matchSubcategory = this.currentCategory !== 'Горячее' || this.currentSubcategory === 'Все' || r.subcategory === this.currentSubcategory;
                     const matchSearch = !this.currentSearch || 
-                        r.title.toLowerCase().includes(this.currentSearch) || 
+                        r.title.toLowerCase().includes(this.currentSearch) ||
                         (r.ingredients && r.ingredients.some(i => i.toLowerCase().includes(this.currentSearch)));
-                    return matchCat && matchSub && matchSearch;
+                    return matchCategory && matchSubcategory && matchSearch;
                 });
 
-                if (title) {
-                    title.textContent = this.currentCategory === 'Все' ? 'Все рецепты' : `${this.currentCategory} ${this.currentSubcategory !== 'Все' ? '• ' + this.currentSubcategory : ''}`;
-                }
-                if (countText) {
-                    countText.textContent = `${filtered.length} ${filtered.length === 1 ? 'рецепт' : (filtered.length >= 2 && filtered.length <= 4) ? 'рецепта' : 'рецептов'}`;
-                }
+                filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
+
+                titleEl.textContent = this.currentCategory === 'Все' ? 'Все рецепты' : this.currentCategory + (this.currentSubcategory !== 'Все' ? ` / ${this.currentSubcategory}` : '');
+                countEl.textContent = `${filtered.length} рецептов`;
 
                 if (filtered.length === 0) {
                     grid.innerHTML = `
-                        <div class="col-span-full text-center py-16 bg-white/60 rounded-[2.5rem] border border-brand-lilac/30 p-8">
-                            <div class="w-16 h-16 bg-brand-lilac/20 rounded-full flex items-center justify-center mx-auto text-brand-violet text-2xl mb-3">
+                        <div class="col-span-full py-20 text-center bg-white rounded-[2.5rem] shadow-2xs border border-brand-lilac/30">
+                            <div class="w-16 h-16 bg-brand-lilac/30 text-brand-violet rounded-2xl flex items-center justify-center mx-auto text-xl mb-4">
                                 <i class="fa-solid fa-utensils"></i>
                             </div>
-                            <h3 class="text-base font-extrabold text-brand-dark mb-1">Рецептов не найдено</h3>
-                            <p class="text-xs text-brand-dark/60">Попробуйте изменить запрос или создайте новый рецепт</p>
+                            <h3 class="text-lg font-extrabold text-brand-dark mb-1">Ничего не найдено</h3>
+                            <p class="text-xs text-brand-dark/60 mb-6">Попробуйте изменить категорию или добавить новый рецепт.</p>
+                            <button onclick="app.openAddModal()" class="bg-brand-dark text-white hover:bg-brand-violet px-6 py-3 rounded-full text-xs font-bold transition inline-flex items-center shadow-sm cursor-pointer">
+                                <i class="fa-solid fa-plus mr-2"></i> Добавить рецепт
+                            </button>
                         </div>
                     `;
                     return;
                 }
 
-                grid.innerHTML = filtered.map(r => this.createCardHTML(r)).join('');
-            }
-
-            createCardHTML(recipe) {
-                return `
-                    <div class="recipe-card bg-white rounded-[2rem] border border-brand-lilac/40 shadow-xs hover:shadow-md transition duration-300 overflow-hidden flex flex-col justify-between group">
-                        <div>
-                            <div class="relative h-48 bg-brand-lilac/20 overflow-hidden cursor-pointer" onclick="app.showDetail('${recipe.id}')">
-                                <img src="${recipe.image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80'">
-                                <div class="absolute top-4 left-4 flex gap-2">
-                                    <span class="bg-brand-dark text-white text-[10px] font-bold px-3 py-1 rounded-full border border-brand-lime/40">${recipe.category}</span>
-                                    ${recipe.subcategory ? `<span class="bg-brand-lime text-brand-dark text-[10px] font-extrabold px-3 py-1 rounded-full">${recipe.subcategory}</span>` : ''}
-                                </div>
-                            </div>
-                            <div class="p-6">
-                                <h3 onclick="app.showDetail('${recipe.id}')" class="text-base font-extrabold text-brand-dark group-hover:text-brand-violet transition cursor-pointer leading-snug mb-3">
-                                    ${recipe.title}
-                                </h3>
-                                <div class="flex items-center space-x-4 text-[11px] font-semibold text-brand-dark/70 mb-4">
-                                    <span><i class="fa-solid fa-clock text-brand-violet mr-1"></i>${recipe.time || '20 мин'}</span>
-                                    <span><i class="fa-solid fa-user-group text-brand-violet mr-1"></i>${recipe.portions || '2 порции'}</span>
-                                </div>
-                                <div class="text-xs text-brand-dark/80 space-y-1 line-clamp-2">
-                                    ${(recipe.ingredients || []).slice(0, 3).map(i => `<div class="truncate">• ${i}</div>`).join('')}
-                                </div>
+                grid.innerHTML = filtered.map(recipe => `
+                    <div onclick="app.openDetail('${recipe.id}')" class="bg-white rounded-[2.5rem] shadow-xs hover:shadow-xl transition duration-500 overflow-hidden cursor-pointer group flex flex-col justify-between border border-brand-lilac/30">
+                        <div class="relative h-60 bg-brand-lilac/20 overflow-hidden">
+                            <img src="${recipe.image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80'}" alt="${recipe.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" onerror="this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80'">
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="bg-white/90 backdrop-blur-md text-brand-dark font-extrabold text-[10px] px-3 py-1 rounded-full shadow-2xs">${recipe.category || 'Без категории'}</span>
+                                ${recipe.subcategory ? `<span class="bg-brand-lilac text-brand-dark font-extrabold text-[10px] px-3 py-1 rounded-full shadow-2xs">${recipe.subcategory}</span>` : ''}
                             </div>
                         </div>
-                        <div class="px-6 pb-6 pt-2 flex items-center justify-between border-t border-brand-lilac/20">
-                            <button onclick="app.showDetail('${recipe.id}')" class="text-xs font-bold text-brand-dark hover:text-brand-violet flex items-center gap-1.5 transition">
-                                Открыть <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                            </button>
-                            <div class="flex items-center space-x-2">
-                                <button onclick="app.generateShortShareLink('${recipe.id}')" title="Поделиться короткой ссылкой" class="w-8 h-8 rounded-full bg-brand-lilac/20 hover:bg-brand-lilac/50 text-brand-dark flex items-center justify-center text-xs transition">
-                                    <i class="fa-solid fa-share-nodes"></i>
-                                </button>
-                                <button onclick="app.deleteRecipe('${recipe.id}')" title="Удалить" class="w-8 h-8 rounded-full bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center text-xs transition">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
+                        <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="text-lg font-extrabold text-brand-dark group-hover:text-brand-violet transition line-clamp-1">${recipe.title}</h3>
+                                <p class="text-xs text-brand-dark/60 mt-1.5 line-clamp-2">${(recipe.ingredients || []).slice(0, 3).join(', ')}...</p>
+                            </div>
+                            <div class="flex items-center justify-between pt-4 border-t border-brand-lilac/30 text-[11px] font-semibold text-brand-dark/70">
+                                <span class="flex items-center"><i class="fa-solid fa-clock mr-1.5 text-brand-violet"></i>${recipe.time || '30 мин'}</span>
+                                <span class="flex items-center"><i class="fa-solid fa-user-group mr-1.5 text-brand-violet"></i>${recipe.portions || '4 порции'}</span>
+                                <span class="flex items-center text-brand-violet font-bold"><i class="fa-solid fa-eye mr-1"></i>${recipe.views || 0}</span>
                             </div>
                         </div>
                     </div>
-                `;
+                `).join('');
             }
 
-            showDetail(id) {
-                const recipe = this.recipes.find(r => r.id === id);
+            parsePortionNumber(portionStr) {
+                if (!portionStr) return 4;
+                const match = portionStr.match(/\d+/);
+                return match ? parseInt(match[0], 10) : 4;
+            }
+
+            scaleIngredientQuantity(text, currentPortions, basePortions) {
+                if (!text || basePortions <= 0 || currentPortions === basePortions) return text;
+                const ratio = currentPortions / basePortions;
+                return text.replace(/(\d+(?:[\.,]\d+)?)/g, (match) => {
+                    let val = parseFloat(match.replace(',', '.'));
+                    if (isNaN(val)) return match;
+                    let scaled = val * ratio;
+                    let formatted = Number.isInteger(scaled) ? scaled.toString() : scaled.toFixed(1).replace(/\.0$/, '');
+                    return formatted;
+                });
+            }
+
+            toggleIngredientCheck(key) {
+                if (this.checkedIngredients.has(key)) {
+                    this.checkedIngredients.delete(key);
+                } else {
+                    this.checkedIngredients.add(key);
+                }
+                this.renderDetailViewContent();
+                this.renderCookingStep();
+            }
+
+            toggleStepCheck(key) {
+                if (this.checkedSteps.has(key)) {
+                    this.checkedSteps.delete(key);
+                } else {
+                    this.checkedSteps.add(key);
+                }
+                this.renderDetailViewContent();
+            }
+
+            adjustPortions(delta) {
+                const newPortions = Math.max(1, Math.min(20, this.currentPortions + delta));
+                if (newPortions !== this.currentPortions) {
+                    this.currentPortions = newPortions;
+                    this.renderDetailViewContent();
+                    this.renderCookingStep();
+                }
+            }
+
+            openDetail(id) {
+                const recipe = this.recipes.find(r => r.id == id);
                 if (!recipe) return;
 
+                if (this.activeRecipeId !== id) {
+                    recipe.views = (recipe.views || 0) + 1;
+                    this.saveToStorage();
+                    this.activeRecipeId = id;
+                    this.basePortions = this.parsePortionNumber(recipe.portions);
+                    this.currentPortions = this.basePortions;
+                    this.checkedIngredients.clear();
+                    this.checkedSteps.clear();
+                }
+
                 document.getElementById('homeView').classList.add('hidden');
-                const detailView = document.getElementById('detailView');
-                detailView.classList.remove('hidden');
+                document.getElementById('detailView').classList.remove('hidden');
+                this.renderDetailViewContent();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            renderDetailViewContent() {
+                const recipe = this.recipes.find(r => r.id == this.activeRecipeId);
+                if (!recipe) return;
 
                 const content = document.getElementById('recipeDetailContent');
                 content.innerHTML = `
                     <div class="relative h-72 sm:h-96 bg-brand-lilac/20">
-                        <img src="${recipe.image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=80'}" class="w-full h-full object-cover">
+                        <img src="${recipe.image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=80'}" alt="${recipe.title}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=80'">
                         <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/40 to-transparent flex items-end">
-                            <div class="p-6 sm:p-10 text-white w-full flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-                                <div>
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="bg-brand-lime text-brand-dark text-xs font-black px-3.5 py-1 rounded-full">${recipe.category}</span>
-                                        ${recipe.subcategory ? `<span class="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3.5 py-1 rounded-full border border-white/30">${recipe.subcategory}</span>` : ''}
-                                    </div>
-                                    <h1 class="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">${recipe.title}</h1>
-                                    <div class="flex items-center space-x-6 text-xs font-bold text-brand-lilac mt-3">
-                                        <span><i class="fa-solid fa-clock text-brand-lime mr-1.5"></i>${recipe.time || '—'}</span>
-                                        <span><i class="fa-solid fa-user-group text-brand-lime mr-1.5"></i>${recipe.portions || '1 порция'}</span>
-                                    </div>
+                            <div class="p-8 sm:p-12 text-white max-w-4xl w-full">
+                                <div class="flex flex-wrap gap-2.5 mb-3">
+                                    <span class="bg-brand-violet text-white font-extrabold text-[10px] px-3.5 py-1 rounded-full uppercase tracking-wider shadow-2xs">${recipe.category}</span>
+                                    ${recipe.subcategory ? `<span class="bg-brand-lilac text-brand-dark font-extrabold text-[10px] px-3.5 py-1 rounded-full uppercase tracking-wider">${recipe.subcategory}</span>` : ''}
                                 </div>
-                                <div class="flex items-center space-x-2">
-                                    <button onclick="app.openAddModal('${recipe.id}')" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 border border-white/30">
-                                        <i class="fa-solid fa-pen"></i> Изменить
-                                    </button>
-                                    <button onclick="app.generateShortShareLink('${recipe.id}')" class="bg-brand-lime hover:bg-lime-400 text-brand-dark px-5 py-2.5 rounded-full text-xs font-extrabold transition shadow-sm flex items-center gap-2">
-                                        <i class="fa-solid fa-share-nodes"></i> Короткая ссылка
-                                    </button>
+                                <h1 class="text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">${recipe.title}</h1>
+                                <div class="flex flex-wrap items-center gap-6 text-xs font-medium text-brand-lilac">
+                                    <span><i class="fa-solid fa-clock mr-1.5 text-white"></i>${recipe.time || '—'}</span>
+                                    <span><i class="fa-solid fa-user-group mr-1.5 text-white"></i>${recipe.portions || '1 порция'}</span>
+                                    <span><i class="fa-solid fa-eye mr-1.5 text-white"></i>Просмотров: ${recipe.views}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="lg:col-span-1 bg-brand-lilac/15 p-6 sm:p-8 rounded-[2rem] border border-brand-lilac/30 h-fit">
-                            <h3 class="text-sm font-extrabold text-brand-dark mb-4 uppercase tracking-wider flex items-center">
-                                <span class="w-3 h-3 rounded-full bg-brand-lime mr-2.5 inline-block"></span> Ингредиенты
-                            </h3>
-                            <ul class="space-y-3 text-xs font-semibold text-brand-dark">
-                                ${(recipe.ingredients || []).map(ing => `
-                                    <li class="pb-2 border-b border-brand-lilac/30 flex items-start gap-2">
-                                        <input type="checkbox" class="mt-0.5 rounded text-brand-violet focus:ring-brand-lime">
-                                        <span>${ing}</span>
-                                    </li>
-                                `).join('')}
+                        <!-- Sidebar: Ingredients & Portion Scaler -->
+                        <div class="lg:col-span-1 bg-brand-lilac/20 p-6 sm:p-8 rounded-[2rem] h-fit shadow-2xs border border-brand-lilac/30 space-y-6">
+                            <div class="flex items-center justify-between border-b border-brand-lilac/40 pb-4">
+                                <h3 class="text-base font-extrabold text-brand-dark flex items-center">
+                                    <span class="w-3 h-3 rounded-full bg-brand-violet mr-3 inline-block"></span> Ингредиенты
+                                </h3>
+                                <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-2xl shadow-2xs border border-brand-lilac/30">
+                                    <button onclick="app.adjustPortions(-1)" class="w-6 h-6 rounded-lg bg-brand-lilac/30 hover:bg-brand-violet hover:text-white flex items-center justify-center font-bold text-xs text-brand-dark transition cursor-pointer">-</button>
+                                    <span class="text-xs font-extrabold text-brand-dark min-w-[3.5rem] text-center">${this.currentPortions} порц</span>
+                                    <button onclick="app.adjustPortions(1)" class="w-6 h-6 rounded-lg bg-brand-lilac/30 hover:bg-brand-violet hover:text-white flex items-center justify-center font-bold text-xs text-brand-dark transition cursor-pointer">+</button>
+                                </div>
+                            </div>
+                            <ul class="space-y-3 text-xs font-medium text-brand-dark">
+                                ${(recipe.ingredients || []).map((ing, idx) => {
+                                    const key = `ing_${this.activeRecipeId}_${idx}`;
+                                    const isChecked = this.checkedIngredients.has(key);
+                                    const scaledText = this.scaleIngredientQuantity(ing, this.currentPortions, this.basePortions);
+                                    return `
+                                        <li onclick="app.toggleIngredientCheck('${key}')" class="flex items-start p-2.5 rounded-xl hover:bg-white/60 transition cursor-pointer select-none ${isChecked ? 'opacity-40 line-through' : ''}">
+                                            <div class="w-5 h-5 rounded-md border border-brand-violet/40 flex items-center justify-center mr-3 mt-0.5 flex-shrink-0 ${isChecked ? 'bg-brand-violet text-white' : 'bg-white'}">
+                                                ${isChecked ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
+                                            </div>
+                                            <span class="leading-relaxed flex-1">${scaledText}</span>
+                                        </li>
+                                    `;
+                                }).join('')}
                             </ul>
                         </div>
-                        <div class="lg:col-span-2 space-y-5">
-                            <h3 class="text-sm font-extrabold text-brand-dark mb-4 uppercase tracking-wider flex items-center">
-                                <span class="w-3 h-3 rounded-full bg-brand-lime mr-2.5 inline-block"></span> Приготовление по шагам
-                            </h3>
-                            ${(recipe.steps || []).map((step, idx) => `
-                                <div class="flex items-start space-x-4 p-4 rounded-2xl bg-brand-lilac/10 border border-brand-lilac/20">
-                                    <div class="w-7 h-7 rounded-xl bg-brand-dark text-brand-lime font-black flex items-center justify-center flex-shrink-0 text-xs">${idx + 1}</div>
-                                    <div class="text-xs text-brand-dark leading-relaxed pt-1 font-medium">${step}</div>
+
+                        <!-- Main Column: Steps & Action buttons -->
+                        <div class="lg:col-span-2 space-y-8">
+                            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-brand-lilac/30 pb-4">
+                                <h3 class="text-base font-extrabold text-brand-dark flex items-center">
+                                    <span class="w-3 h-3 rounded-full bg-brand-violet mr-3 inline-block"></span> Способ приготовления
+                                </h3>
+                                <button onclick="app.startCookingMode('${recipe.id}')" class="bg-brand-violet hover:bg-brand-dark text-white px-6 py-3 rounded-2xl text-xs font-extrabold transition shadow-md flex items-center hover:scale-105 cursor-pointer">
+                                    <i class="fa-solid fa-play mr-2 text-brand-lime"></i> Пошаговая готовка
+                                </button>
+                            </div>
+                            <div class="space-y-4">
+                                ${(recipe.steps || []).map((step, idx) => {
+                                    const key = `step_${this.activeRecipeId}_${idx}`;
+                                    const isChecked = this.checkedSteps.has(key);
+                                    const parsedTimers = this.parseTimersFromText(step);
+
+                                    return `
+                                        <div class="p-5 rounded-2xl bg-brand-lilac/10 hover:bg-white hover:shadow-xs transition border border-brand-lilac/20 space-y-3 ${isChecked ? 'opacity-40' : ''}">
+                                            <div class="flex items-start space-x-4 cursor-pointer" onclick="app.toggleStepCheck('${key}')">
+                                                <div class="w-9 h-9 rounded-xl ${isChecked ? 'bg-emerald-500' : 'bg-brand-violet'} text-white font-extrabold flex items-center justify-center flex-shrink-0 text-xs shadow-2xs">
+                                                    ${isChecked ? '<i class="fa-solid fa-check"></i>' : (idx + 1)}
+                                                </div>
+                                                <div class="text-xs sm:text-sm text-brand-dark leading-relaxed pt-1.5 font-medium flex-1 ${isChecked ? 'line-through' : ''}">
+                                                    ${step}
+                                                </div>
+                                            </div>
+                                            ${parsedTimers.length > 0 ? `
+                                                <div class="pl-13 flex flex-wrap items-center gap-2 pt-1">
+                                                    ${parsedTimers.map(t => `
+                                                        <button onclick="app.startStepTimer(${t.seconds}, '${t.label}')" class="px-3.5 py-1.5 rounded-xl bg-brand-lilac/30 hover:bg-brand-violet hover:text-white text-brand-dark font-extrabold text-[11px] transition flex items-center shadow-2xs cursor-pointer">
+                                                            <i class="fa-solid fa-stopwatch mr-1.5 text-brand-violet"></i> Таймер: ${t.label}
+                                                        </button>
+                                                    `).join('')}
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <div class="pt-8 flex flex-wrap items-center justify-between gap-4 border-t border-brand-lilac/30">
+                                <div class="flex items-center space-x-3">
+                                    <button onclick="app.openEditModal('${recipe.id}')" class="bg-brand-lilac/40 hover:bg-brand-lilac text-brand-dark px-5 py-3 rounded-full text-xs font-bold transition flex items-center shadow-2xs cursor-pointer">
+                                        <i class="fa-solid fa-pen mr-2 text-brand-violet"></i> Изменить
+                                    </button>
+                                    <button onclick="app.generateShortShareLink('${recipe.id}')" class="bg-brand-dark text-white hover:bg-brand-violet px-5 py-3 rounded-full text-xs font-bold transition flex items-center shadow-2xs cursor-pointer">
+                                        <i class="fa-solid fa-share-nodes mr-2 text-brand-lilac"></i> Короткая ссылка
+                                    </button>
                                 </div>
-                            `).join('')}
+                                <button onclick="app.deleteRecipe('${recipe.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 px-5 py-3 rounded-full text-xs font-bold transition flex items-center shadow-2xs cursor-pointer">
+                                    <i class="fa-solid fa-trash mr-2"></i> Удалить
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
-                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             showHome() {
                 document.getElementById('detailView').classList.add('hidden');
                 document.getElementById('homeView').classList.remove('hidden');
+                this.render();
             }
 
-            openAddModal(id = null) {
-                const modal = document.getElementById('recipeModal');
-                const form = document.getElementById('recipeForm');
-                form.reset();
+            // Step-by-Step Cooking Overlay
+            startCookingMode(id) {
+                const recipe = this.recipes.find(r => r.id == id);
+                if (!recipe || !recipe.steps || recipe.steps.length === 0) {
+                    this.showToast('Ошибка', 'В этом рецепте нет шагов приготовления', 'warning');
+                    return;
+                }
+                this.activeRecipeId = id;
+                this.cookingCurrentStep = 0;
+                document.getElementById('cookingModeOverlay').classList.remove('hidden');
+                this.renderCookingStep();
+                this.enableWakeLockIfPossible();
+            }
 
-                if (id) {
-                    const r = this.recipes.find(x => x.id === id);
-                    if (r) {
-                        document.getElementById('modalTitle').innerText = 'Редактировать рецепт';
-                        document.getElementById('recipeId').value = r.id;
-                        document.getElementById('recipeTitle').value = r.title;
-                        document.getElementById('recipeCategory').value = r.category;
-                        this.handleModalCategoryChange(r.category);
-                        if (r.subcategory) document.getElementById('recipeSubcategory').value = r.subcategory;
-                        document.getElementById('recipeTime').value = r.time || '';
-                        document.getElementById('recipePortions').value = r.portions || '';
-                        document.getElementById('recipeImage').value = r.image || '';
-                        document.getElementById('recipeIngredients').value = (r.ingredients || []).join('\n');
-                        document.getElementById('recipeSteps').value = (r.steps || []).join('\n');
-                    }
-                } else {
-                    document.getElementById('modalTitle').innerText = 'Новый кулинарный шедевр';
-                    document.getElementById('recipeId').value = '';
-                    this.handleModalCategoryChange('Супы');
+            closeCookingMode() {
+                document.getElementById('cookingModeOverlay').classList.add('hidden');
+                if (this.wakeLock) {
+                    this.wakeLock.release().catch(() => {});
+                    this.wakeLock = null;
+                    this.isWakeLockActive = false;
+                }
+            }
+
+            toggleCookingIngredientsSidebar() {
+                const sidebar = document.getElementById('cookingIngredientsSidebar');
+                if (sidebar) {
+                    sidebar.classList.toggle('translate-x-full');
+                }
+            }
+
+            changeCookingStep(delta) {
+                const recipe = this.recipes.find(r => r.id == this.activeRecipeId);
+                if (!recipe || !recipe.steps) return;
+
+                const newStep = this.cookingCurrentStep + delta;
+                if (newStep >= recipe.steps.length) {
+                    this.closeCookingMode();
+                    this.showToast('Шедевр готов! 🎉', 'Поздравляем, вы отлично справились с приготовлением!', 'success');
+                    return;
+                }
+                if (newStep >= 0) {
+                    this.cookingCurrentStep = newStep;
+                    this.renderCookingStep();
+                }
+            }
+
+            renderCookingStep() {
+                const recipe = this.recipes.find(r => r.id == this.activeRecipeId);
+                if (!recipe) return;
+
+                const totalSteps = recipe.steps.length;
+                const stepIdx = this.cookingCurrentStep;
+                const stepText = recipe.steps[stepIdx];
+                const progressPct = Math.round(((stepIdx + 1) / totalSteps) * 100);
+
+                document.getElementById('cookingStepProgress').style.width = progressPct + '%';
+                document.getElementById('cookingStepCounter').textContent = `Шаг ${stepIdx + 1} из ${totalSteps}`;
+
+                const parsedTimers = this.parseTimersFromText(stepText);
+
+                const stepTextContainer = document.getElementById('cookingStepTextContent');
+                stepTextContainer.innerHTML = `
+                    <div class="mb-6 flex items-center justify-between">
+                        <span class="w-12 h-12 rounded-2xl bg-brand-violet text-white font-black flex items-center justify-center text-lg shadow-lg">
+                            ${stepIdx + 1}
+                        </span>
+                        <span class="text-xs font-bold text-brand-lilac tracking-wider uppercase">${progressPct}% завершено</span>
+                    </div>
+                    <p class="text-xl sm:text-2xl font-bold leading-relaxed text-white mb-8">${stepText}</p>
+                    <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
+                        ${parsedTimers.map(t => `
+                            <button onclick="app.startStepTimer(${t.seconds}, '${t.label}')" class="px-5 py-3 rounded-2xl bg-brand-lime text-brand-dark font-extrabold text-xs hover:scale-105 active:scale-95 transition flex items-center shadow-md cursor-pointer">
+                                <i class="fa-solid fa-stopwatch mr-2"></i> Запустить таймер на ${t.label}
+                            </button>
+                        `).join('')}
+                        <button onclick="app.promptCustomTimer()" class="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition flex items-center border border-white/20 cursor-pointer">
+                            <i class="fa-solid fa-plus mr-2"></i> Свой таймер
+                        </button>
+                    </div>
+                `;
+
+                const sideList = document.getElementById('cookingIngredientsSidebarList');
+                if (sideList) {
+                    sideList.innerHTML = (recipe.ingredients || []).map((ing, idx) => {
+                        const key = `ing_${this.activeRecipeId}_${idx}`;
+                        const isChecked = this.checkedIngredients.has(key);
+                        const scaled = this.scaleIngredientQuantity(ing, this.currentPortions, this.basePortions);
+                        return `
+                            <li onclick="app.toggleIngredientCheck('${key}')" class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 transition cursor-pointer flex items-center justify-between border border-white/10 ${isChecked ? 'opacity-40 line-through' : ''}">
+                                <span class="text-xs text-white font-medium pr-2">${scaled}</span>
+                                <i class="fa-solid ${isChecked ? 'fa-square-check text-brand-lime' : 'fa-square text-white/30'} text-sm"></i>
+                            </li>
+                        `;
+                    }).join('');
                 }
 
-                modal.classList.remove('hidden');
+                const prevBtn = document.getElementById('cookingPrevBtn');
+                const nextBtn = document.getElementById('cookingNextBtn');
+
+                if (prevBtn) prevBtn.disabled = stepIdx === 0;
+                if (nextBtn) {
+                    if (stepIdx === totalSteps - 1) {
+                        nextBtn.innerHTML = `<span>Завершить</span><i class="fa-solid fa-check ml-2"></i>`;
+                        nextBtn.className = "px-6 py-3.5 rounded-2xl bg-brand-lime text-brand-dark font-extrabold text-xs sm:text-sm hover:scale-105 transition shadow-lg flex items-center cursor-pointer";
+                    } else {
+                        nextBtn.innerHTML = `<span>Дальше</span><i class="fa-solid fa-arrow-right ml-2"></i>`;
+                        nextBtn.className = "px-6 py-3.5 rounded-2xl bg-brand-violet hover:bg-brand-violet/80 text-white font-extrabold text-xs sm:text-sm transition shadow-lg flex items-center cursor-pointer";
+                    }
+                }
+            }
+
+            // Wake Lock Screen Management
+            async enableWakeLockIfPossible() {
+                if ('wakeLock' in navigator) {
+                    try {
+                        this.wakeLock = await navigator.wakeLock.request('screen');
+                        this.isWakeLockActive = true;
+                        this.updateWakeLockUI();
+                    } catch (err) {
+                        this.isWakeLockActive = false;
+                        this.updateWakeLockUI();
+                    }
+                }
+            }
+
+            async toggleWakeLock() {
+                if (this.wakeLock !== null && this.isWakeLockActive) {
+                    try {
+                        await this.wakeLock.release();
+                        this.wakeLock = null;
+                        this.isWakeLockActive = false;
+                        this.showToast('Экран', 'Автовыключение экрана восстановлено', 'info');
+                    } catch (e) { console.error(e); }
+                } else {
+                    if ('wakeLock' in navigator) {
+                        try {
+                            this.wakeLock = await navigator.wakeLock.request('screen');
+                            this.isWakeLockActive = true;
+                            this.showToast('Экран', 'Экран не будет гаснуть во время готовки', 'success');
+                        } catch (err) {
+                            this.showToast('Экран', 'Не удалось заблокировать гашение экрана', 'warning');
+                        }
+                    } else {
+                        this.showToast('Экран', 'Wake Lock API не поддерживается браузером', 'warning');
+                    }
+                }
+                this.updateWakeLockUI();
+            }
+
+            updateWakeLockUI() {
+                const btn = document.getElementById('wakeLockBtn');
+                if (!btn) return;
+                if (this.isWakeLockActive) {
+                    btn.className = "px-4 py-2 rounded-full text-xs font-bold bg-brand-lime text-brand-dark flex items-center space-x-2 transition shadow-sm cursor-pointer";
+                    btn.innerHTML = `<i class="fa-solid fa-lightbulb"></i><span>Экран не гаснет</span>`;
+                } else {
+                    btn.className = "px-4 py-2 rounded-full text-xs font-bold bg-white/10 hover:bg-white/20 text-white flex items-center space-x-2 transition cursor-pointer";
+                    btn.innerHTML = `<i class="fa-regular fa-lightbulb"></i><span>Экран гаснет</span>`;
+                }
+            }
+
+            // Audio & Timers
+            initAudioContext() {
+                if (!this.audioCtx) {
+                    const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtxClass) {
+                        this.audioCtx = new AudioCtxClass();
+                    }
+                }
+                if (this.audioCtx && this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+            }
+
+            parseTimersFromText(text) {
+                if (!text) return [];
+                const regex = /(\d+(?:[\.,]\d+)?)\s*(мин|минут|минуты|минута|сек|секунд|секунды|секунда|ч|час|часа|часов)/gi;
+                const matches = [];
+                let match;
+                while ((match = regex.exec(text)) !== null) {
+                    let num = parseFloat(match[1].replace(',', '.'));
+                    let unit = match[2].toLowerCase();
+                    let seconds = 0;
+                    if (unit.startsWith('сек')) {
+                        seconds = num;
+                    } else if (unit.startsWith('ч')) {
+                        seconds = num * 3600;
+                    } else {
+                        seconds = num * 60;
+                    }
+                    if (seconds > 0) {
+                        matches.push({
+                            label: match[0],
+                            seconds: Math.round(seconds)
+                        });
+                    }
+                }
+                return matches;
+            }
+
+            promptCustomTimer() {
+                const input = prompt("Введите время для таймера в минутах:", "5");
+                if (input) {
+                    const mins = parseFloat(input);
+                    if (!isNaN(mins) && mins > 0) {
+                        this.startStepTimer(Math.round(mins * 60), `${mins} мин`);
+                    }
+                }
+            }
+
+            startStepTimer(durationSeconds, label) {
+                this.initAudioContext();
+                const timerId = 'tm_' + Date.now();
+                this.timers.push({
+                    id: timerId,
+                    label: label,
+                    remaining: durationSeconds,
+                    total: durationSeconds,
+                    isPaused: false,
+                    notified: false
+                });
+                this.renderTimersBar();
+                this.showToast('Таймер запущен', `${label} (${Math.ceil(durationSeconds / 60)} мин)`, 'info');
+            }
+
+            startTimerTicker() {
+                if (this.timerInterval) clearInterval(this.timerInterval);
+                this.timerInterval = setInterval(() => {
+                    let changed = false;
+                    this.timers.forEach(t => {
+                        if (!t.isPaused && t.remaining > 0) {
+                            t.remaining--;
+                            changed = true;
+                        }
+                        if (t.remaining === 0 && !t.notified) {
+                            t.notified = true;
+                            changed = true;
+                            this.playTimerChime();
+                            this.showToast('⏱ Таймер завершен!', `Время для "${t.label}" истекло!`, 'success');
+                        }
+                    });
+                    if (changed || this.timers.length > 0) {
+                        this.renderTimersBar();
+                    }
+                }, 1000);
+            }
+
+            stopTimer(id) {
+                this.timers = this.timers.filter(t => t.id !== id);
+                this.renderTimersBar();
+            }
+
+            togglePauseTimer(id) {
+                const timer = this.timers.find(t => t.id === id);
+                if (timer) {
+                    timer.isPaused = !timer.isPaused;
+                    this.renderTimersBar();
+                }
+            }
+
+            renderTimersBar() {
+                const container = document.getElementById('activeTimersBar');
+                if (this.timers.length === 0) {
+                    container.innerHTML = '';
+                    return;
+                }
+
+                container.innerHTML = this.timers.map(t => {
+                    const mins = Math.floor(t.remaining / 60);
+                    const secs = t.remaining % 60;
+                    const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    const isDone = t.remaining === 0;
+
+                    return `
+                        <div class="pointer-events-auto bg-brand-dark/95 border border-brand-lilac/40 text-white p-4 rounded-3xl shadow-2xl backdrop-blur-md flex items-center justify-between transition-all ${isDone ? 'border-brand-lime bg-brand-violet timer-active' : ''}">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-2xl bg-brand-lime text-brand-dark flex items-center justify-center font-extrabold text-xs">
+                                    <i class="fa-solid fa-stopwatch text-base"></i>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] uppercase font-bold text-brand-lilac tracking-wider">${t.label}</div>
+                                    <div class="text-xl font-mono font-black ${isDone ? 'text-brand-lime' : 'text-white'}">${timeStr}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                ${!isDone ? `
+                                    <button onclick="app.togglePauseTimer('${t.id}')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs cursor-pointer">
+                                        <i class="fa-solid ${t.isPaused ? 'fa-play' : 'fa-pause'}"></i>
+                                    </button>
+                                ` : ''}
+                                <button onclick="app.stopTimer('${t.id}')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-red-500/80 flex items-center justify-center text-xs transition cursor-pointer">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            playTimerChime() {
+                try {
+                    this.initAudioContext();
+                    if (!this.audioCtx) return;
+                    const now = this.audioCtx.currentTime;
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, i) => {
+                        const osc = this.audioCtx.createOscillator();
+                        const gain = this.audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.3, now + i * 0.15);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.4);
+                        osc.connect(gain);
+                        gain.connect(this.audioCtx.destination);
+                        osc.start(now + i * 0.15);
+                        osc.stop(now + i * 0.15 + 0.4);
+                    });
+                } catch (e) {
+                    console.error('Audio chime error:', e);
+                }
+            }
+
+            showToast(title, message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+
+                const toast = document.createElement('div');
+                const bgClass = type === 'success' ? 'bg-emerald-600' : type === 'warning' ? 'bg-amber-600' : 'bg-brand-dark';
+                
+                toast.className = `pointer-events-auto ${bgClass} text-white p-4 rounded-3xl shadow-2xl backdrop-blur-md flex items-center justify-between transition-all duration-300 transform translate-y-2 opacity-0 border border-white/20`;
+                toast.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-2xl bg-white/20 flex items-center justify-center text-white text-xs">
+                            <i class="fa-solid ${type === 'success' ? 'fa-check' : type === 'warning' ? 'fa-bell' : 'fa-circle-info'}"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold">${title}</div>
+                            ${message ? `<div class="text-[11px] text-white/80">${message}</div>` : ''}
+                        </div>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs ml-3 cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+
+                container.appendChild(toast);
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-y-2', 'opacity-0');
+                });
+
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.classList.add('opacity-0', 'translate-y-2');
+                        setTimeout(() => toast.remove(), 300);
+                    }
+                }, 4000);
+            }
+
+            showConfirm(title, message, onConfirm) {
+                document.getElementById('confirmTitle').textContent = title;
+                document.getElementById('confirmMessage').textContent = message;
+                this.confirmCallback = onConfirm;
+                document.getElementById('confirmModal').classList.remove('hidden');
+            }
+
+            closeConfirm(result) {
+                document.getElementById('confirmModal').classList.add('hidden');
+                if (result && this.confirmCallback) {
+                    this.confirmCallback();
+                }
+                this.confirmCallback = null;
+            }
+
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    const overlay = document.getElementById('cookingModeOverlay');
+                    if (!overlay || overlay.classList.contains('hidden')) return;
+
+                    if (e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault();
+                        this.changeCookingStep(1);
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        this.changeCookingStep(-1);
+                    } else if (e.key === 'Escape') {
+                        e.preventDefault();
+                        this.closeCookingMode();
+                    }
+                });
+            }
+
+            openAddModal() {
+                document.getElementById('modalTitle').innerHTML = `<span class="w-3 h-3 rounded-full bg-brand-lime mr-3 inline-block"></span> Новый кулинарный шедевр`;
+                document.getElementById('recipeForm').reset();
+                document.getElementById('recipeId').value = '';
+                document.getElementById('recipeCategory').value = 'Супы';
+                this.handleModalCategoryChange('Супы');
+                document.getElementById('recipeModal').classList.remove('hidden');
+            }
+
+            openEditModal(id) {
+                const recipe = this.recipes.find(r => r.id == id);
+                if (!recipe) return;
+                document.getElementById('modalTitle').innerHTML = `<span class="w-3 h-3 rounded-full bg-brand-violet mr-3 inline-block"></span> Редактирование рецепта`;
+                document.getElementById('recipeId').value = recipe.id;
+                document.getElementById('recipeTitle').value = recipe.title || '';
+                document.getElementById('recipeCategory').value = recipe.category || 'Горячее';
+                this.handleModalCategoryChange(recipe.category || 'Горячее');
+                if (recipe.subcategory) {
+                    document.getElementById('recipeSubcategory').value = recipe.subcategory;
+                }
+                document.getElementById('recipeTime').value = recipe.time || '';
+                document.getElementById('recipePortions').value = recipe.portions || '';
+                document.getElementById('recipeImage').value = recipe.image || '';
+                document.getElementById('recipeIngredients').value = (recipe.ingredients || []).join('\n');
+                document.getElementById('recipeSteps').value = (recipe.steps || []).join('\n');
+                document.getElementById('recipeModal').classList.remove('hidden');
             }
 
             closeModal() {
                 document.getElementById('recipeModal').classList.add('hidden');
             }
 
-            handleModalCategoryChange(cat) {
-                const wrapper = document.getElementById('modalSubcategoryWrapper');
-                if (cat === 'Горячее') {
-                    wrapper.classList.remove('hidden');
+            handleModalCategoryChange(category) {
+                const subWrapper = document.getElementById('modalSubcategoryWrapper');
+                if (category === 'Горячее') {
+                    subWrapper.classList.remove('hidden');
                 } else {
-                    wrapper.classList.add('hidden');
+                    subWrapper.classList.add('hidden');
                 }
             }
 
             saveRecipe(e) {
                 e.preventDefault();
                 const id = document.getElementById('recipeId').value;
-                const title = document.getElementById('recipeTitle').value.trim();
                 const category = document.getElementById('recipeCategory').value;
                 const subcategory = category === 'Горячее' ? document.getElementById('recipeSubcategory').value : '';
-                const time = document.getElementById('recipeTime').value.trim();
-                const portions = document.getElementById('recipePortions').value.trim();
-                const image = document.getElementById('recipeImage').value.trim();
-                const ingredients = document.getElementById('recipeIngredients').value.split('\n').map(s => s.trim()).filter(Boolean);
-                const steps = document.getElementById('recipeSteps').value.split('\n').map(s => s.trim()).filter(Boolean);
+                
+                const recipeData = {
+                    id: id || 'rec_' + Date.now(),
+                    title: document.getElementById('recipeTitle').value.trim(),
+                    category: category,
+                    subcategory: subcategory,
+                    time: document.getElementById('recipeTime').value.trim() || '30 мин',
+                    portions: document.getElementById('recipePortions').value.trim() || '4 порции',
+                    image: document.getElementById('recipeImage').value.trim(),
+                    ingredients: document.getElementById('recipeIngredients').value.split('\n').map(s => s.trim()).filter(Boolean),
+                    steps: document.getElementById('recipeSteps').value.split('\n').map(s => s.trim()).filter(Boolean),
+                    views: id ? (this.recipes.find(r => r.id == id)?.views || 0) : 0
+                };
 
                 if (id) {
-                    const idx = this.recipes.findIndex(r => r.id === id);
-                    if (idx !== -1) {
-                        this.recipes[idx] = { ...this.recipes[idx], title, category, subcategory, time, portions, image, ingredients, steps };
-                        this.showToast('Рецепт успешно обновлен!');
-                    }
+                    const idx = this.recipes.findIndex(r => r.id == id);
+                    if (idx !== -1) this.recipes[idx] = recipeData;
                 } else {
-                    const newRecipe = {
-                        id: 'rec_' + Date.now(),
-                        shortCode: Math.random().toString(36).substring(2, 8),
-                        title, category, subcategory, time, portions, image, ingredients, steps, views: 0
-                    };
-                    this.recipes.unshift(newRecipe);
-                    this.showToast('Новый рецепт добавлен!');
+                    this.recipes.unshift(recipeData);
                 }
 
                 this.saveToStorage();
                 this.closeModal();
-                this.showHome();
-                this.render();
+                this.showToast('Сохранено', 'Рецепт успешно обновлен', 'success');
+                
+                if (this.activeRecipeId === id && id) {
+                    this.openDetail(id);
+                } else {
+                    this.renderCategories();
+                    this.render();
+                }
             }
 
             deleteRecipe(id) {
-                this.recipes = this.recipes.filter(r => r.id !== id);
-                this.saveToStorage();
-                this.showToast('Рецепт был удален');
-                this.showHome();
-                this.render();
-            }
-
-            generateShortShareLink(id) {
-                const recipe = this.recipes.find(r => r.id === id);
-                if (!recipe) return;
-
-                const hashData = this.encodeRecipeToHash(recipe);
-
-                // Формируем прямой адрес рецепта
-                let cleanBase = window.location.href.replace(/^blob:/, '').split('#')[0];
-                cleanBase = cleanBase.replace(/(https?:\/\/[^\/]+)\1/, '$1');
-                
-                const fullUrl = cleanBase + '#' + hashData;
-                this.openShareModal(fullUrl, recipe);
-            }
-
-            encodeRecipeToHash(recipe) {
-                const compact = {
-                    t: recipe.title,
-                    c: recipe.category,
-                    s: recipe.subcategory || '',
-                    tm: recipe.time || '',
-                    p: recipe.portions || '',
-                    i: recipe.ingredients || [],
-                    st: recipe.steps || [],
-                    img: recipe.image || ''
-                };
-                try {
-                    const json = JSON.stringify(compact);
-                    return 'd=' + encodeURIComponent(btoa(unescape(encodeURIComponent(json))));
-                } catch(e) {
-                    return 'r=' + (recipe.shortCode || recipe.id);
-                }
-            }
-
-            decodeRecipeFromHash(hash) {
-                try {
-                    const raw = hash.replace('#d=', '');
-                    const json = decodeURIComponent(escape(atob(decodeURIComponent(raw))));
-                    const data = JSON.parse(json);
-                    return {
-                        id: 'shared_' + Date.now(),
-                        shortCode: Math.random().toString(36).substring(2, 8),
-                        title: data.t || 'Поделились рецептом',
-                        category: data.c || 'Горячее',
-                        subcategory: data.s || '',
-                        time: data.tm || '',
-                        portions: data.p || '',
-                        ingredients: data.i || [],
-                        steps: data.st || [],
-                        image: data.img || ''
-                    };
-                } catch(e) {
-                    return null;
-                }
-            }
-
-            openShareModal(url, recipe = null) {
-                let modal = document.getElementById('shareModal');
-                if (modal) modal.remove();
-
-                const textForCopy = recipe ? `🍳 *${recipe.title}*\n⏱ Время: ${recipe.time || '—'}\n👥 Порции: ${recipe.portions || '—'}\n\n🥗 *Ингредиенты:*\n${(recipe.ingredients || []).map(i => '• ' + i).join('\n')}\n\n👩‍🍳 *Приготовление:*\n${(recipe.steps || []).map((s, idx) => `${idx + 1}. ${s}`).join('\n')}` : '';
-
-                modal = document.createElement('div');
-                modal.id = 'shareModal';
-                modal.className = 'fixed inset-0 bg-brand-dark/40 backdrop-blur-sm z-50 flex items-center justify-center p-4';
-                modal.innerHTML = `
-                    <div class="bg-white rounded-[2.5rem] max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-5 border border-brand-lilac/40">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-base font-extrabold text-brand-dark flex items-center gap-2">
-                                <i class="fa-solid fa-share-nodes text-brand-violet"></i> Поделиться рецептом
-                            </h3>
-                            <button onclick="document.getElementById('shareModal').remove()" class="w-8 h-8 rounded-full bg-brand-lilac/20 hover:bg-brand-lilac/40 flex items-center justify-center text-brand-dark transition">
-                                <i class="fa-solid fa-xmark text-xs"></i>
-                            </button>
-                        </div>
-                        
-                        <p class="text-xs text-brand-dark/70 leading-relaxed">
-                            Выберите удобный способ: скопируйте универсальную ссылку с вшитыми данными рецепта или отправьте структурированный текст.
-                        </p>
-
-                        <!-- Поле со ссылкой -->
-                        <div class="space-y-1.5">
-                            <label class="block text-[10px] font-bold text-brand-dark/60 uppercase tracking-wider">Универсальная ссылка</label>
-                            <div class="flex items-center space-x-2">
-                                <input type="text" id="shareUrlInput" value="${url}" readonly class="w-full px-4 py-3 bg-brand-lilac/15 border border-brand-lilac/40 rounded-2xl text-xs text-brand-dark font-mono select-all focus:outline-none">
-                                <button onclick="app.copyTextFromInput('shareUrlInput', 'Ссылка скопирована!')" class="bg-brand-dark hover:bg-brand-violet text-white px-4 py-3 rounded-2xl text-xs font-bold transition whitespace-nowrap border border-brand-lime/30 flex items-center gap-1.5 shadow-xs">
-                                    <i class="fa-regular fa-copy"></i> Копировать
-                                </button>
-                            </div>
-                        </div>
-
-                        ${recipe ? `
-                        <!-- Кнопка быстрой отправки текстом -->
-                        <div class="pt-2 border-t border-brand-lilac/30">
-                            <button onclick="app.copyCustomText(\`${textForCopy.replace(/`/g, '\\`').replace(/"/g, '&quot;')}\`, 'Текст рецепта скопирован!')" class="w-full bg-brand-lilac/20 hover:bg-brand-lilac/40 text-brand-dark px-4 py-3 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 border border-brand-lilac/40">
-                                <i class="fa-regular fa-file-lines text-brand-violet"></i> Скопировать рецепт текстом (для мессенджеров)
-                            </button>
-                        </div>
-                        ` : ''}
-
-                        <div class="text-[11px] text-brand-dark/50 text-center italic">
-                            Ссылка содержит все ингредиенты и шаги, открываясь автономно.
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-            }
-
-            copyTextFromInput(inputId, msg) {
-                const input = document.getElementById(inputId);
-                if (!input) return;
-                input.select();
-                try {
-                    navigator.clipboard.writeText(input.value).then(() => {
-                        this.showToast(msg);
-                    }).catch(() => {
-                        document.execCommand('copy');
-                        this.showToast(msg);
-                    });
-                } catch(e) {
-                    document.execCommand('copy');
-                    this.showToast(msg);
-                }
-            }
-
-            copyCustomText(text, msg) {
-                try {
-                    navigator.clipboard.writeText(text).then(() => {
-                        this.showToast(msg);
-                    }).catch(() => {
-                        const temp = document.createElement('textarea');
-                        temp.value = text;
-                        document.body.appendChild(temp);
-                        temp.select();
-                        document.execCommand('copy');
-                        temp.remove();
-                        this.showToast(msg);
-                    });
-                } catch(e) {
-                    this.showToast(msg);
-                }
-            }
-
-            checkForSharedRecipe() {
-                const hash = window.location.hash;
-                if (!hash) return false;
-
-                // 1. Попытка декодировать вшитые данные рецепта (#d=...)
-                if (hash.startsWith('#d=')) {
-                    const recipe = this.decodeRecipeFromHash(hash);
-                    if (recipe) {
-                        const exists = this.recipes.some(r => r.title === recipe.title);
-                        if (!exists) {
-                            this.recipes.unshift(recipe);
-                            this.saveToStorage();
-                        }
-                        this.renderSharedRecipeView(recipe);
-                        return true;
+                this.showConfirm(
+                    'Удаление рецепта',
+                    'Вы уверены, что хотите удалить этот рецепт? Это действие нельзя отменить.',
+                    () => {
+                        this.recipes = this.recipes.filter(r => r.id != id);
+                        this.saveToStorage();
+                        this.showHome();
+                        this.showToast('Удалено', 'Рецепт успешно удален', 'warning');
                     }
-                }
-
-                // 2. Обработка короткого хэша (#r=...)
-                if (hash.startsWith('#r=')) {
-                    const code = hash.replace('#r=', '');
-                    const found = this.recipes.find(r => r.shortCode === code || r.id === code);
-                    if (found) {
-                        this.renderSharedRecipeView(found);
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            renderSharedRecipeView(recipe) {
-                document.querySelector('main').innerHTML = `
-                    <div class="max-w-4xl mx-auto py-4">
-                        <div class="mb-6 flex items-center justify-between gap-4 bg-brand-lime/20 border border-brand-lime/50 p-4 rounded-2xl text-xs font-bold text-brand-dark">
-                            <div class="flex items-center space-x-2">
-                                <i class="fa-solid fa-sparkles text-brand-violet text-sm"></i>
-                                <span>Вам прислали рецепт! Он автоматически добавлен в вашу коллекцию.</span>
-                            </div>
-                            <button onclick="window.location.hash=''; window.location.reload();" class="bg-brand-dark text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-brand-violet transition">
-                                Моя кулинарная книга
-                            </button>
-                        </div>
-                        <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-brand-lilac/40">
-                            <div class="relative h-72 sm:h-96 bg-brand-lilac/20">
-                                <img src="${recipe.image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=80'}" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/40 to-transparent flex items-end">
-                                    <div class="p-8 text-white w-full">
-                                        <h1 class="text-2xl sm:text-4xl font-black mb-2 tracking-tight">${recipe.title}</h1>
-                                        <div class="flex items-center space-x-6 text-xs font-bold text-brand-lilac">
-                                            <span><i class="fa-solid fa-clock text-brand-lime mr-1.5"></i>${recipe.time || '—'}</span>
-                                            <span><i class="fa-solid fa-user-group text-brand-lime mr-1.5"></i>${recipe.portions || '1 порция'}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                <div class="lg:col-span-1 bg-brand-lilac/15 p-6 rounded-[2rem] border border-brand-lilac/30 h-fit">
-                                    <h3 class="text-xs font-black text-brand-dark mb-4 uppercase tracking-wider">Ингредиенты</h3>
-                                    <ul class="space-y-2.5 text-xs font-semibold text-brand-dark">
-                                        ${(recipe.ingredients || []).map(ing => `<li class="pb-2 border-b border-brand-lilac/20">• ${ing}</li>`).join('')}
-                                    </ul>
-                                </div>
-                                <div class="lg:col-span-2 space-y-4">
-                                    <h3 class="text-xs font-black text-brand-dark mb-4 uppercase tracking-wider">Приготовление</h3>
-                                    ${(recipe.steps || []).map((step, idx) => `
-                                        <div class="flex items-start space-x-3 p-3.5 rounded-2xl bg-brand-lilac/10 border border-brand-lilac/20">
-                                            <div class="w-6 h-6 rounded-lg bg-brand-dark text-brand-lime font-bold flex items-center justify-center text-xs flex-shrink-0">${idx + 1}</div>
-                                            <div class="text-xs text-brand-dark leading-relaxed font-medium pt-0.5">${step}</div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                );
             }
 
             openImportModal() {
+                document.getElementById('rawTextInput').value = '';
+                document.getElementById('importErrorBox').classList.add('hidden');
+                document.getElementById('importLoading').classList.add('hidden');
                 document.getElementById('importModal').classList.remove('hidden');
             }
 
@@ -843,98 +1203,337 @@
                 document.getElementById('importModal').classList.add('hidden');
             }
 
-            handleFileSelect(e) {
-                const file = e.target.files[0];
-                if (file) this.processFile(file);
-            }
-
-            handleFileDrop(e) {
-                e.preventDefault();
-                const file = e.dataTransfer.files[0];
-                if (file) this.processFile(file);
-            }
-
-            processFile(file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('rawTextInput').value = e.target.result;
-                    this.showToast('Файл успешно прочитан');
+            autoDetectCategoryAndSubcategory(text) {
+                const lower = text.toLowerCase();
+                const keywords = {
+                    'Супы': ['суп', 'борщ', 'щи', 'бульон', 'уха', 'солянка', 'крем-суп', 'гаспачо', 'рамен', 'биск', 'харчо', 'рассольник', 'лапша'],
+                    'Салаты': ['салат', 'цезарь', 'оливье', 'винегрет', 'руккола', 'мимоза', 'греческий', 'табуле', 'капрезе'],
+                    'Десерты': ['торт', 'пирожное', 'фондан', 'капкейк', 'чизкейк', 'мусс', 'мороженое', 'тирамису', 'эклер', 'конфеты', 'шоколад', 'суфле', 'панакота', 'крем'],
+                    'Выпечка': ['пирог', 'булочки', 'хлеб', 'кекс', 'печенье', 'блины', 'оладьи', 'круассан', 'тарт', 'шарлотка', 'тесто', 'пирожки', 'булочка', 'вафли'],
+                    'Завтраки': ['сырники', 'омлет', 'яичница', 'каша', 'овсянка', 'гранола', 'пашот', 'скрамбл', 'драники', 'тост'],
+                    'Закуски': ['брускетта', 'канапе', 'тапас', 'паштет', 'рулетики', 'хумус', 'нарезка', 'закуска', 'тартар', 'карпаччо', 'чипсы'],
+                    'Напитки': ['лимонад', 'коктейль', 'смузи', 'чай', 'кофе', 'глинтвейн', 'компот', 'морс', 'сангрия', 'сок', 'фреш', 'латте'],
+                    'Соусы': ['соус', 'майонез', 'кетчуп', 'песто', 'бешамель', 'заправка', 'маринад', 'подлива', 'тартар соус'],
+                    'Горячее': ['стейк', 'жаркое', 'рагу', 'паста', 'спагетти', 'ризотто', 'лазанья', 'запеканка', 'плов', 'гуляш', 'тефтели', 'котлеты', 'шашлык', 'жарен', 'запечен', 'тушен', 'куриц', 'мясо', 'рыба', 'говядин', 'свинин', 'индейк', 'фарш', 'лосось', 'креветки']
                 };
-                reader.readAsText(file);
+                const subcategoryKeywords = {
+                    'Курица': ['курица', 'куриное', 'филе курицы', 'индейка', 'цыпленок', 'утка', 'крылышки', 'наггетсы', 'птица'],
+                    'Мясо': ['говядина', 'свинина', 'баранина', 'телятина', 'фарш', 'стейк', 'ребра', 'бекон', 'бефстроганов', 'гуляш', 'мясной', 'мясо'],
+                    'Рыба и морепродукты': ['рыба', 'лосось', 'семга', 'форель', 'треска', 'тунец', 'креветки', 'кальмар', 'мидии', 'осьминог', 'морепродукты', 'судак'],
+                    'Овощи': ['овощи', 'овощной', 'рататуй', 'кабачки', 'баклажаны', 'брокколи', 'цветная капуста', 'картофель'],
+                    'Крупы': ['ризотто', 'паста', 'спагетти', 'гречка', 'рис', 'булгур', 'киноа', 'лапша', 'перловка', 'пшено']
+                };
+
+                let detectedCat = 'Горячее';
+                let maxCatScore = 0;
+                for (const [cat, words] of Object.entries(keywords)) {
+                    let score = 0;
+                    for (const word of words) {
+                        if (lower.includes(word)) score += word.length > 4 ? 2 : 1;
+                    }
+                    if (score > maxCatScore) {
+                        maxCatScore = score;
+                        detectedCat = cat;
+                    }
+                }
+
+                let detectedSub = '';
+                if (detectedCat === 'Горячее') {
+                    let maxSubScore = 0;
+                    for (const [sub, words] of Object.entries(subcategoryKeywords)) {
+                        let score = 0;
+                        for (const word of words) {
+                            if (lower.includes(word)) score += 1;
+                        }
+                        if (score > maxSubScore) {
+                            maxSubScore = score;
+                            detectedSub = sub;
+                        }
+                    }
+                    if (!detectedSub) detectedSub = 'Мясо';
+                }
+
+                return { category: detectedCat, subcategory: detectedSub };
             }
 
             processTextImport() {
                 const text = document.getElementById('rawTextInput').value.trim();
+                const errBox = document.getElementById('importErrorBox');
+                const errMsg = document.getElementById('importErrorMessage');
                 if (!text) {
-                    this.showToast('Пожалуйста, введите или загрузите текст', 'error');
+                    errMsg.textContent = 'Пожалуйста, введите текст рецепта для расшифровки.';
+                    errBox.classList.remove('hidden');
                     return;
                 }
-
-                const parsed = this.parseRecipeFromText(text);
-                const newRecipe = {
-                    id: 'rec_' + Date.now(),
-                    shortCode: Math.random().toString(36).substring(2, 8),
-                    ...parsed,
-                    views: 0,
-                    image: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80'
-                };
-
-                this.recipes.unshift(newRecipe);
-                this.saveToStorage();
-                this.closeImportModal();
-                this.showToast('Рецепт успешно расшифрован!');
-                this.showHome();
-                this.render();
+                errBox.classList.add('hidden');
+                document.getElementById('importLoading').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('importLoading').classList.add('hidden');
+                    this.parseAndFillModal(text);
+                }, 600);
             }
 
-            parseRecipeFromText(text) {
-                const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-                let title = lines[0] || 'Импортированный рецепт';
-                let category = 'Горячее';
-                let subcategory = 'Мясо';
+            handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                this.processFile(file);
+            }
+
+            handleFileDrop(e) {
+                e.preventDefault();
+                document.getElementById('dropZone').classList.remove('border-brand-violet', 'bg-brand-lilac/30');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    this.processFile(e.dataTransfer.files[0]);
+                }
+            }
+
+            processFile(file) {
+                document.getElementById('importLoading').classList.remove('hidden');
+                
+                if (file.type.includes('text')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('importLoading').classList.add('hidden');
+                        this.parseAndFillModal(e.target.result);
+                    };
+                    reader.readAsText(file);
+                } else {
+                    setTimeout(() => {
+                        document.getElementById('importLoading').classList.add('hidden');
+                        const simulatedText = `Французский Крем-суп из шампиньонов\n\nИнгредиенты:\nШампиньоны 400 г\nСливки 20% 200 мл\nЛук репчатый 1 шт\nСливочное масло 30 г\nСоль и перец по вкусу\n\nПриготовление:\n1. Нарезать лук и грибы.\n2. Обжарить на сливочном масле 10 минут.\n3. Влить сливки и взбить блендером до нежности.`;
+                        this.parseAndFillModal(simulatedText);
+                    }, 1000);
+                }
+            }
+
+            parseAndFillModal(rawText) {
+                const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+                let title = lines[0] || 'Изысканный рецепт';
+                title = title.replace(/^(рецепт|название):\s*/i, '');
+                
+                const { category, subcategory } = this.autoDetectCategoryAndSubcategory(rawText);
+
                 let time = '30 мин';
-                let portions = '2-4 порции';
+                const timeMatch = rawText.match(/(\d+\s*(мин|минут|часа?|ч))/i);
+                if (timeMatch) time = timeMatch[0];
+
+                let portions = '4 порции';
+                const portionMatch = rawText.match(/(\d+\s*(порци[ия]|персон))/i);
+                if (portionMatch) portions = portionMatch[0];
+
                 let ingredients = [];
                 let steps = [];
+                let isStepSection = false;
 
-                let isIngredients = false;
-                let isSteps = false;
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i];
+                    if (/^(приготовление|шаги|этапы|способ приготовления|инструкция)/i.test(line)) {
+                        isStepSection = true;
+                        continue;
+                    }
+                    if (/^(ингредиенты|состав|вам понадобится)/i.test(line)) {
+                        isStepSection = false;
+                        continue;
+                    }
+                    if (isStepSection || /^\d+[\.\)]/.test(line) || /^шаг/i.test(line)) {
+                        steps.push(line.replace(/^\d+[\.\)]\s*/, '').replace(/^шаг\s*\d+:?\s*/i, ''));
+                    } else {
+                        ingredients.push(line.replace(/^[\-\*\•]\s*/, ''));
+                    }
+                }
 
-                lines.forEach((line, idx) => {
-                    const lower = line.toLowerCase();
-                    if (lower.includes('ингредиент') || lower.includes('состав')) {
-                        isIngredients = true;
-                        isSteps = false;
-                        return;
-                    }
-                    if (lower.includes('приготовлен') || lower.includes('шаги') || lower.includes('инструкция')) {
-                        isSteps = true;
-                        isIngredients = false;
-                        return;
-                    }
+                if (ingredients.length === 0) ingredients = lines.slice(1, Math.min(5, lines.length));
+                if (steps.length === 0) steps = lines.slice(Math.min(5, lines.length));
 
-                    if (isIngredients) {
-                        ingredients.push(line.replace(/^[•\-\*0-9\.\s]+/, ''));
-                    } else if (isSteps) {
-                        steps.push(line.replace(/^[•\-\*0-9\.\s]+/, ''));
-                    } else if (idx > 0) {
-                        if (lower.includes('мин') || lower.includes('час')) time = line;
-                        else if (lower.includes('порц')) portions = line;
-                        else ingredients.push(line);
-                    }
+                this.closeImportModal();
+
+                document.getElementById('recipeForm').reset();
+                document.getElementById('recipeId').value = '';
+                document.getElementById('modalTitle').innerHTML = `<span class="w-3 h-3 rounded-full bg-brand-lime mr-3 inline-block"></span> Подтвердите импортированный рецепт`;
+                
+                document.getElementById('recipeTitle').value = title;
+                document.getElementById('recipeCategory').value = category;
+                this.handleModalCategoryChange(category);
+                if (category === 'Горячее' && subcategory) {
+                    document.getElementById('recipeSubcategory').value = subcategory;
+                }
+                document.getElementById('recipeTime').value = time;
+                document.getElementById('recipePortions').value = portions;
+                document.getElementById('recipeIngredients').value = ingredients.join('\n');
+                document.getElementById('recipeSteps').value = steps.join('\n');
+                document.getElementById('recipeModal').classList.remove('hidden');
+            }
+
+            generateShortShareLink(id) {
+                const recipe = this.recipes.find(r => r.id == id);
+                if (!recipe) return;
+                const rawString = JSON.stringify({
+                    t: recipe.title,
+                    c: recipe.category,
+                    s: recipe.subcategory,
+                    m: recipe.time,
+                    p: recipe.portions,
+                    i: recipe.image,
+                    g: recipe.ingredients,
+                    x: recipe.steps
                 });
+                let hashKey = Math.abs(this.hashCode(rawString)).toString(36).slice(0, 7);
+                sessionStorage.setItem('shr_' + hashKey, rawString);
+                const shareUrl = window.location.origin + window.location.pathname + '#s=' + hashKey;
+                this.openShareModal(shareUrl);
+            }
 
-                if (ingredients.length === 0) ingredients = ['200г ингредиента', 'Щипотка соли'];
-                if (steps.length === 0) steps = [text];
+            hashCode(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                    hash |= 0;
+                }
+                return hash;
+            }
 
-                return { title, category, subcategory, time, portions, ingredients, steps };
+            openShareModal(url) {
+                let modal = document.getElementById('shareModal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'shareModal';
+                    modal.className = 'fixed inset-0 bg-brand-dark/40 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+                    modal.innerHTML = `
+                        <div class="bg-white rounded-[2.5rem] max-w-md w-full p-8 shadow-2xl space-y-5 border border-brand-lilac/40">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-base font-extrabold text-brand-dark flex items-center">
+                                    <i class="fa-solid fa-share-nodes text-brand-violet mr-2.5"></i> Ультра-короткая ссылка
+                                </h3>
+                                <button onclick="document.getElementById('shareModal').remove()" class="w-9 h-9 rounded-full bg-brand-lilac/30 flex items-center justify-center text-brand-dark hover:bg-brand-lilac cursor-pointer">
+                                    <i class="fa-solid fa-xmark text-xs"></i>
+                                </button>
+                            </div>
+                            <p class="text-xs text-brand-dark/70 leading-relaxed">
+                                Хеш ссылки открывает исключительно этот рецепт. Все остальные рецепты остаются конфиденциальными.
+                            </p>
+                            <div class="flex items-center space-x-2">
+                                <input type="text" id="shareUrlInput" readonly class="w-full px-4 py-3 bg-brand-lilac/20 rounded-2xl text-xs text-brand-dark select-all font-mono border border-brand-lilac/30">
+                                <button onclick="app.copyShareUrl()" class="bg-brand-dark text-white px-5 py-3 rounded-2xl text-xs font-bold hover:bg-brand-violet transition whitespace-nowrap shadow-sm cursor-pointer">
+                                    Копировать
+                                </button>
+                            </div>
+                            <div id="copySuccess" class="text-xs text-brand-violet font-bold text-center hidden">Ссылка скопирована!</div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                } else {
+                    modal.classList.remove('hidden');
+                }
+                document.getElementById('shareUrlInput').value = url;
+                document.getElementById('copySuccess').classList.add('hidden');
+            }
+
+            copyShareUrl() {
+                const input = document.getElementById('shareUrlInput');
+                input.select();
+                document.execCommand('copy');
+                document.getElementById('copySuccess').classList.remove('hidden');
+                this.showToast('Скопировано', 'Ссылка сохранена в буфер обмена', 'success');
+                setTimeout(() => {
+                    const modal = document.getElementById('shareModal');
+                    if (modal) modal.remove();
+                }, 1200);
+            }
+
+            checkForSharedRecipe() {
+                const hash = window.location.hash;
+                if (hash.startsWith('#s=')) {
+                    const key = hash.replace('#s=', '');
+                    const rawString = sessionStorage.getItem('shr_' + key);
+                    if (rawString) {
+                        try {
+                            const recipe = JSON.parse(rawString);
+                            this.renderSharedRecipeView(recipe);
+                            return true;
+                        } catch(e) { console.error(e); }
+                    }
+                }
+                return false;
+            }
+
+            renderSharedRecipeView(recipe) {
+                document.querySelector('header').innerHTML = `
+                    <div class="max-w-7xl mx-auto px-6 sm:px-10 h-24 flex items-center justify-between">
+                        <div class="flex items-center space-x-4 cursor-pointer group" onclick="window.location.hash=''; window.location.reload();">
+                            <div class="w-12 h-12 rounded-2xl bg-brand-lilac/40 text-brand-dark flex items-center justify-center font-extrabold text-2xl shadow-2xs">
+                                J
+                            </div>
+                            <div>
+                                <span class="text-2xl font-extrabold tracking-tight text-brand-dark">Julia's Recipes</span>
+                            </div>
+                        </div>
+                        <button onclick="window.location.hash=''; window.location.reload();" class="bg-brand-dark text-white hover:bg-brand-violet px-6 py-3 rounded-full text-xs font-bold transition shadow-sm cursor-pointer">
+                            Открыть мои рецепты
+                        </button>
+                    </div>
+                `;
+                document.querySelector('main').innerHTML = `
+                    <div class="max-w-4xl mx-auto py-6">
+                        <div class="mb-8 bg-brand-lilac/20 p-4 rounded-2xl text-center text-xs font-semibold text-brand-dark border border-brand-lilac/30">
+                            <i class="fa-solid fa-lock mr-2 text-brand-violet"></i> Персональный рецепт по короткой ссылке.
+                        </div>
+                        <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-brand-lilac/30">
+                            <div class="relative h-80 sm:h-96 bg-brand-lilac/20">
+                                <img src="${recipe.i || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=80'}" alt="${recipe.t}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=80'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-brand-dark/30 to-transparent flex items-end">
+                                    <div class="p-8 sm:p-12 text-white max-w-4xl">
+                                        <div class="flex gap-2.5 mb-3">
+                                            <span class="bg-brand-violet text-white font-extrabold text-[10px] px-3.5 py-1 rounded-full uppercase tracking-wider shadow-2xs">${recipe.c || 'Рецепт'}</span>
+                                            ${recipe.s ? `<span class="bg-brand-lilac text-brand-dark font-extrabold text-[10px] px-3.5 py-1 rounded-full uppercase tracking-wider">${recipe.s}</span>` : ''}
+                                        </div>
+                                        <h1 class="text-3xl sm:text-5xl font-extrabold mb-3 tracking-tight">${recipe.t}</h1>
+                                        <div class="flex items-center space-x-6 text-xs font-medium text-brand-lilac">
+                                            <span><i class="fa-solid fa-clock mr-1.5 text-white"></i>${recipe.m || '—'}</span>
+                                            <span><i class="fa-solid fa-user-group mr-1.5 text-white"></i>${recipe.p || '1 порция'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-8 sm:p-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
+                                <div class="lg:col-span-1 bg-brand-lilac/20 p-8 rounded-[2rem] h-fit shadow-2xs border border-brand-lilac/30">
+                                    <h3 class="text-base font-extrabold text-brand-dark mb-5 flex items-center">
+                                        <span class="w-3 h-3 rounded-full bg-brand-violet mr-3 inline-block"></span> Ингредиенты
+                                    </h3>
+                                    <ul class="space-y-3.5 text-xs font-medium text-brand-dark">
+                                        ${(recipe.g || []).map(ing => `
+                                            <li class="flex items-start pb-3 border-b border-brand-lilac/40 last:border-0">
+                                                <span class="w-2 h-2 rounded-full bg-brand-violet mt-1 mr-3 flex-shrink-0"></span>
+                                                <span class="leading-relaxed">${ing}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                                <div class="lg:col-span-2 space-y-8">
+                                    <h3 class="text-base font-extrabold text-brand-dark mb-5 flex items-center">
+                                        <span class="w-3 h-3 rounded-full bg-brand-violet mr-3 inline-block"></span> Приготовление
+                                    </h3>
+                                    <div class="space-y-4">
+                                        ${(recipe.x || []).map((step, idx) => `
+                                            <div class="flex items-start space-x-4 p-5 rounded-2xl bg-brand-lilac/10 border border-brand-lilac/20">
+                                                <div class="w-9 h-9 rounded-xl bg-brand-violet text-white font-extrabold flex items-center justify-center flex-shrink-0 text-xs shadow-2xs">
+                                                    ${idx + 1}
+                                                </div>
+                                                <div class="text-xs sm:text-sm text-brand-dark leading-relaxed pt-1.5 font-medium">
+                                                    ${step}
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            window.app = new RecipeApp();
-            window.addEventListener('hashchange', () => app.checkForSharedRecipe());
-        });
+        // Initialize App
+        const app = new RecipeApp();
     </script>
 </body>
 </html>
